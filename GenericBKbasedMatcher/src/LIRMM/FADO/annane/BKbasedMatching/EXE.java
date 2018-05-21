@@ -14,6 +14,11 @@ public class EXE {
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
 		
+		//This is an example about how to run our framework
+		//The matcher variable in Parameters Class represents the direct matcher that we use for anchoring
+		//matcher may be an instance of any direct matcher that implements a static function align(URL source, URL target) function
+		//The align function should return the URL of the generated alignment between source and target
+		
 		String sourcePath="C:\\Users\\annane\\Google Drive\\.1.Extension\\OAEI2016\\LargeBio\\T1\\FMA.owl";;
 		String targetPath="C:/Users/annane/Google Drive/.1.Extension/OAEI2016/LargeBio/T1/NCI.owl";
 		String referenceAlignment="C:\\Users\\annane\\Google Drive\\.1.Extension\\OAEI2016\\LargeBio\\with repairs\\oaei_FMA2NCI_UMLS_mappings_with_flagged_repairs.rdf";;
@@ -21,6 +26,9 @@ public class EXE {
 		
 		//Parameters
 		
+		/**
+		 * Initializing driver and session variables is necessary only if you want to use Neo4j for the derivation process.
+		 */
 		Parameters.driver = GraphDatabase.driver( "bolt://localhost:7687", AuthTokens.basic("neo4j", "aminaamina")  );
 		Parameters.session=Parameters.driver.session();
 		File sourceOntologyFile=new File(sourcePath);//source ontology
