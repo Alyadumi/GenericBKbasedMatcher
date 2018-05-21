@@ -362,7 +362,7 @@ public class BKbuilding {
 				String path=ontologyPath.get(ontoURI);
 			 	ontology=JenaMethods.LoadOntologyModelWithJena(path);
 			 	/* ********************** looking for fathers *********************************** */
-				String Query=C.prefix+"SELECT ?c ?f  where {?c <"+com.hp.hpl.jena.vocabulary.RDFS.subClassOf+"> ?f} ";
+				String Query=C.prefix+"SELECT ?c ?f  where {?c <"+org.apache.jena.vocabulary.RDFS.subClassOf+"> ?f} ";
 				if(ontologyConcepts.get(ontoURI)!=null){
 				Query=Query+ " VALUES ?c  {"+ontologyConcepts.get(ontoURI)+"}";
 				res = JenaMethods.ExecuteQuery(Query, ontology);
@@ -395,7 +395,7 @@ public class BKbuilding {
 				 }	
 			}
 		      /* ********************** looking for children *********************************** */
-					Query=C.prefix+"SELECT ?c ?f  where {?c <"+com.hp.hpl.jena.vocabulary.RDFS.subClassOf+"> ?f} ";
+					Query=C.prefix+"SELECT ?c ?f  where {?c <"+org.apache.jena.vocabulary.RDFS.subClassOf+"> ?f} ";
 					Query=Query+ " VALUES ?f  {"+ontologyConcepts.get(ontoURI)+"}";
 					res = JenaMethods.ExecuteQuery(Query, ontology);
 					
