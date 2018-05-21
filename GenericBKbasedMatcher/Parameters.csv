@@ -1,0 +1,12 @@
+Parameters,Values,Possible values,Comments
+DerivationStrategy,SpecificAlgorithm,SpecificAlgorithm;Neo4j,"Attention, when choosing Neo4j option Neo4j should be installed"
+MappingSelectionStrategy,RuleBased,RuleBased;Mlbased,
+BKontologiesFolderPath,BKontologies,,
+BKmappingsPath,ExistingMappings,,"Existing mappings should be in a CSV file, please see the example in our repository"
+DerivationMinPathLength,1,an integer number,It is the number of edges in a given path between source and target concepts
+DerivationMaxPathLength,4,an integer number,
+MappingSelectionThreshold,0,a real number between 0 and 1,
+DataSetsFolderPath,,,the folder of the datasets for the machine learning selection 
+BKselectionInternalExploration,false,true;false,
+BKselectionInternalExplorationRelations,owl:subClass,,the relation should exist in the BK ontologies
+BKselectionInternalExplorationLength,1,an integer number,"Attention, a large number reduces the efficiency of the system."
