@@ -23,7 +23,6 @@ import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.vocabulary.OWL;
-import org.apache.jena.vocabulary.RDFS;
 import org.apache.jena.vocabulary.SKOS;
 import org.semanticweb.owl.align.Alignment;
 
@@ -34,9 +33,6 @@ import fr.inrialpes.exmo.align.parser.AlignmentParser;
 
 public class BKbuilding {
 
-
-	URL source;
-	URL target;
 	public static String sourceIRI;
 	Map<String,String> ExistingAlignments;
 	String[] BkOntologies;
@@ -73,7 +69,7 @@ public class BKbuilding {
 		globalGraph.clear();
 		BkGraph.clear();
 		ExistingAlignments=getExistingAlignments();
-		File BkOntologiesFolder = new File(C.BkOntologiesFolderPath); 
+		File BkOntologiesFolder = new File(Parameters.BKontologiesFolderPath); 
 		BkOntologies = BkOntologiesFolder.list(); 
 		getOntologyCodes();
 	}
@@ -85,51 +81,18 @@ public class BKbuilding {
 	public Map<String, TreeSet<Noeud>> BuildBK() throws Exception
 	{
 		long debut=System.currentTimeMillis();		
-		Fichier folder=new Fichier(C.BkAlignmentsFolderPath);
+		Fichier folder=new Fichier(Parameters.BkAlignmentsFolderPath);
 		folder.deleteFile();
 		generateBkFromOneFolder();
 		matchOntologyToBKontologies();
 		chargerBKMappingsFromFolder();
-		if(C.oboFilePath!=null)chargerBK_Mappings();
-		Model ontologySourceModel=JenaMethods.LoadOntologyModelWithJena(source);
+		if(Parameters.ExistingMappingsPath!=null)chargerBK_Mappings();
+		Model ontologySourceModel=JenaMethods.LoadOntologyModelWithJena(Parameters.sourceOntology);
 		selectSubGraph(ontologySourceModel);
 		createOwlFile2();
-		long time=System.currentTimeMillis()-debut;
-		C.executionTime.add("BKbuild "+(time)+"ms");
 		return BkGraph;
 	}
 	
-	public Map<String, TreeSet<Noeud>> BuildBKobo(String oboMappingFile) throws Exception
-	{
-		long debut=System.currentTimeMillis();		
-		Fichier folder=new Fichier(C.BkAlignmentsFolderPath);
-		folder.deleteFile();
-		 
-		ontologyAcronym=new HashMap<String, String>();
-		ontologyAcronym.put("http://bioontology.org/projects/ontologies/fma/fmaOwlDlComponent_2_0","fma");
-		ontologyAcronym.put("http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl","ncit");
-		ontologyAcronym.put("http://www.ihtsdo.org/snomed","snomedct");
-		ontologyAcronym.put("http://human.owl","ncit");
-		ontologyAcronym.put("http://mouse.owl","ma");
-		
-		if(ontologyAcronym.containsKey(sourceIRI))
-			{
-				sourceAcronym=ontologyAcronym.get(sourceIRI);
-				loadConcepts("C:\\Users\\annane\\Desktop\\concepts\\concepts\\",sourceAcronym);//load the interface
-				if(!sourceIRI.equals("http://mouse.owl")&&!sourceIRI.equals("http://human.owl"))sourceNeedInterface=true;
-			}
-		else {
-             sourceAcronym=getAcronym(sourceIRI);
-			}
-	  
-		C.oboFilePath=oboMappingFile;
-		if(C.oboFilePath!=null)chargerBK_Mappings();
-		Model ontologySourceModel=JenaMethods.LoadOntologyModelWithJena(source);
-		selectSubGraph(ontologySourceModel,true);
-		long time=System.currentTimeMillis()-debut;
-		C.executionTime.add("BKbuild "+(time)+"ms");
-		return BkGraph;
-	}
 	
 	static String getAcronym(String IRI)
 	{
@@ -137,7 +100,6 @@ public class BKbuilding {
 		res=IRI.substring(IRI.lastIndexOf("/")+1);
 		if(res.contains("."))res=res.substring(0, res.indexOf("."));
 		res=res.toLowerCase();
-		System.out.println("Voici l'acronyme: "+res);
 		return res;
 	}
 	/**
@@ -150,12 +112,10 @@ public class BKbuilding {
 	{
 		long debut=System.currentTimeMillis();	
 		chargerBKMappingsFromFolder();
-		if(C.oboFilePath!=null)chargerBK_Mappings();
+		if(Parameters.ExistingMappingsPath!=null)chargerBK_Mappings();
 		selectSubGraph(URIs);
 		enrichWithChildrenAndFathers();
 		createOwlFile2();
-		long time=System.currentTimeMillis()-debut;
-		C.executionTime.add("BKbuild "+(time)+"ms");
 		return BkGraph;
 	}
 	/**
@@ -184,7 +144,7 @@ public class BKbuilding {
 		 {	
 			 BkGraph.put(e,l);
 			 for (Noeud noeud : l) {
-				m=noeud.ontology+C.separator+noeud.code;
+				m=noeud.ontology+Parameters.separator+noeud.code;
 				if(!treated.contains(m))
 				{
 					untreated.add(m);
@@ -196,17 +156,13 @@ public class BKbuilding {
 	 System.out.println("La taille du graph BK: "+BkGraph.size());
 	// globalGraph.clear();
 	// enrichWithChildrenAndFathers();
-
-	 long time=System.currentTimeMillis()-debut;
-	 C.executionTime.add("size subGraph: "+BkGraph.size());
-	 C.executionTime.add("selectSubGraph "+(time)+"ms");
 	}
 	
 	
 	public static HashMap<String,String> loadOntologyElementsForSelection(Model ontology,String acronym, boolean needInterface) throws Exception
 	{
 		HashMap<String,String>  ontologyUriCode = new HashMap<String,String> ();
-		ResultSet res=JenaMethods.ExecuteQuery(C.prefix+"select ?x where {?x a owl:Class}", ontology);
+		ResultSet res=JenaMethods.ExecuteQuery(Parameters.prefix+"select ?x where {?x a owl:Class}", ontology);
 		String uri;
 		while (res.hasNext()) 
 		{
@@ -217,15 +173,15 @@ public class BKbuilding {
             	String code=Fichier.getUriCode(uri,needInterface);
                 if(needInterface)
                 {
-                    if(codeInterface.containsKey(acronym+C.separator+code))
+                    if(codeInterface.containsKey(acronym+Parameters.separator+code))
                 	{
-                     code=codeInterface.get(acronym+C.separator+code);
-                     ontologyUriCode.put(acronym+C.separator+code,uri);
+                     code=codeInterface.get(acronym+Parameters.separator+code);
+                     ontologyUriCode.put(acronym+Parameters.separator+code,uri);
                 	}
                 }
                 else
                 {
-                    ontologyUriCode.put(acronym+C.separator+code,uri);	
+                    ontologyUriCode.put(acronym+Parameters.separator+code,uri);	
                 }
 
             }
@@ -262,7 +218,7 @@ public class BKbuilding {
 		 {	
 			 BkGraph.put(e,l);
 			 for (Noeud noeud : l) {
-				m=noeud.ontology+C.separator+noeud.code;
+				m=noeud.ontology+Parameters.separator+noeud.code;
 				if(!treated.contains(m))
 				{
 					untreated.add(m);
@@ -274,10 +230,6 @@ public class BKbuilding {
 	 System.out.println("La taille du graph BK: "+BkGraph.size());
 	// globalGraph.clear();
 	// enrichWithChildrenAndFathers();
-
-	 long time=System.currentTimeMillis()-debut;
-	 C.executionTime.add("size subGraph: "+BkGraph.size());
-	 C.executionTime.add("selectSubGraph "+(time)+"ms");
 	}
 	/* ***************************************************************************************** */
 	void selectSubGraph(Model ontologySource) throws Exception
@@ -300,7 +252,7 @@ public class BKbuilding {
 		 {	
 			 BkGraph.put(e,l);
 			 for (Noeud noeud : l) {
-				m=noeud.ontology+C.separator+noeud.code;
+				m=noeud.ontology+Parameters.separator+noeud.code;
 				if(!treated.contains(m))
 				{
 					untreated.add(m);
@@ -312,10 +264,6 @@ public class BKbuilding {
 	 System.out.println("La taille du graph BK: "+BkGraph.size());
 	// globalGraph.clear();
 	// enrichWithChildrenAndFathers();
-
-	 long time=System.currentTimeMillis()-debut;
-	 C.executionTime.add("size subGraph: "+BkGraph.size());
-	 C.executionTime.add("selectSubGraph "+(time)+"ms");
 	}
 	/* *********************************************************************************************** */
 	 void enrichWithChildrenAndFathers() throws MalformedURLException, URISyntaxException
@@ -333,8 +281,8 @@ public class BKbuilding {
 			String o,uri,values;
 			for (String oc : conceptList) 
 			 {	 
-				 o=oc.substring(0,oc.indexOf(C.separator));
-				 uri=oc.substring(oc.indexOf(C.separator)+1);
+				 o=oc.substring(0,oc.indexOf(Parameters.separator));
+				 uri=oc.substring(oc.indexOf(Parameters.separator)+1);
 				 if(!ontologyConcepts.keySet().contains(o))
 				 {
 					 values="<"+uri+"> ";
@@ -348,10 +296,10 @@ public class BKbuilding {
 			
 			//localize ontology paths
 			HashMap<String, String> ontologyPath=new HashMap<>();	
-			File BkOntologiesFolder =new File(C.BkOntologiesFolderPath);
+			File BkOntologiesFolder =new File(Parameters.BKontologiesFolderPath);
 			for (String filePath : BkOntologiesFolder.list()) 
 			{
-				File file=new File(C.BkOntologiesFolderPath+File.separator+filePath);
+				File file=new File(Parameters.BKontologiesFolderPath+File.separator+filePath);
 				String ontologyURI=JenaMethods.getOntologyUri(file.toURI().toURL());
 				ontologyPath.put(ontologyURI, file.getAbsolutePath());
 			}
@@ -362,7 +310,7 @@ public class BKbuilding {
 				String path=ontologyPath.get(ontoURI);
 			 	ontology=JenaMethods.LoadOntologyModelWithJena(path);
 			 	/* ********************** looking for fathers *********************************** */
-				String Query=C.prefix+"SELECT ?c ?f  where {?c <"+org.apache.jena.vocabulary.RDFS.subClassOf+"> ?f} ";
+				String Query=Parameters.prefix+"SELECT ?c ?f  where {?c <"+org.apache.jena.vocabulary.RDFS.subClassOf+"> ?f} ";
 				if(ontologyConcepts.get(ontoURI)!=null){
 				Query=Query+ " VALUES ?c  {"+ontologyConcepts.get(ontoURI)+"}";
 				res = JenaMethods.ExecuteQuery(Query, ontology);
@@ -376,10 +324,10 @@ public class BKbuilding {
 				    	 String fatherURI=sol.get("f").toString();
 				    	 if(fatherURI.contains("http"))
 				    	 {
-							 String fatherConcept=ontoURI+C.separator+fatherURI;
+							 String fatherConcept=ontoURI+Parameters.separator+fatherURI;
 							 
 							 String childURI=sol.get("c").toString();
-						     String childConcept=ontoURI+C.separator+childURI;
+						     String childConcept=ontoURI+Parameters.separator+childURI;
 								
 	                         
 	                         if(!BkGraph.containsKey(fatherConcept))
@@ -395,7 +343,7 @@ public class BKbuilding {
 				 }	
 			}
 		      /* ********************** looking for children *********************************** */
-					Query=C.prefix+"SELECT ?c ?f  where {?c <"+org.apache.jena.vocabulary.RDFS.subClassOf+"> ?f} ";
+					Query=Parameters.prefix+"SELECT ?c ?f  where {?c <"+org.apache.jena.vocabulary.RDFS.subClassOf+"> ?f} ";
 					Query=Query+ " VALUES ?f  {"+ontologyConcepts.get(ontoURI)+"}";
 					res = JenaMethods.ExecuteQuery(Query, ontology);
 					
@@ -406,10 +354,10 @@ public class BKbuilding {
 							 sol = res.next();
 							 String childURI=sol.get("c").toString();
 							 if(childURI.contains("http")){
-						     String childConcept=ontoURI+C.separator+childURI;
+						     String childConcept=ontoURI+Parameters.separator+childURI;
 						     
 					    	 String fatherURI=sol.get("f").toString();
-							 String fatherConcept=ontoURI+C.separator+fatherURI;
+							 String fatherConcept=ontoURI+Parameters.separator+fatherURI;
 								                         
 	                         if(!BkGraph.containsKey(childConcept))
 	                         {BkGraph.put(childConcept, new TreeSet<Noeud>());}
@@ -426,10 +374,8 @@ public class BKbuilding {
 						 
 	 ontology.close();
 	 }
-
-						long time=System.currentTimeMillis()-debut;
 						System.out.println("after "+BkGraph.size());
-						C.executionTime.add("enrichWithFamily "+(time)+"ms");
+
 	 }
 	
 	
@@ -444,7 +390,7 @@ public class BKbuilding {
 		QuerySolution sol;
 		
 		//supprimer l'ancien builtBk s'il existe
-		Fichier fichier=new Fichier(C.BuiltBkPath);		
+		Fichier fichier=new Fichier(Parameters.BuiltBkPath);		
 		fichier.deleteFile();
 		
 
@@ -461,34 +407,33 @@ public class BKbuilding {
 		TreeSet<String> conceptList=new TreeSet<>();
 		conceptList.addAll(BkGraph.keySet());
 		
-		File BkOntologiesFolder =new File(C.BkOntologiesFolderPath);
+		File BkOntologiesFolder =new File(Parameters.BKontologiesFolderPath);
 		String values="";
 		String o;
 		for (String filePath : BkOntologiesFolder.list()) 
-		{
-						File file=new File(C.BkOntologiesFolderPath+File.separator+filePath);
+		{				String path=Parameters.BKontologiesFolderPath+filePath;
+						File file=new File(path);
 					 	String ontologyURI=JenaMethods.getOntologyUri(file.toURI().toURL());
 					 	System.out.println("*****************************Nouvelle BK ontologie: "+ontologyURI);
-					 	String path=C.BkOntologiesFolderPath+filePath;
-						ontology=JenaMethods.LoadOntologyModelWithJena(path);
+						ontology=JenaMethods.LoadOntologyModelWithJena(file.toURI().toURL());
 						 {	 //chercher tous les concepts de cet ontologies
 							 String uri;
 							 values="";
 							 int numberConcept=0;
 							 for (String oc : conceptList) 
 							 {	 
-								 o=oc.substring(0,oc.indexOf(C.separator));
+								 o=oc.substring(0,oc.indexOf(Parameters.separator));
 								 if(o.equalsIgnoreCase(ontologyURI))
 								 {
 									numberConcept++;
-									uri=oc.substring(oc.indexOf(C.separator)+1);
+									uri=oc.substring(oc.indexOf(Parameters.separator)+1);
 									values=values+"<"+uri+"> ";
 								 }
 							  }				
                     int cpt=0;
 					 /* ****************************** Requete1: retrieve prefLabs ********************************* */
                     
-					 requete1=C.prefix+"SELECT ?x ?y  where {?x "+C.prefLabs+" ?y} ";
+					 requete1=Parameters.prefix+"SELECT ?x ?y  where {?x "+Parameters.prefLabs+" ?y} ";
 					 requete1=requete1+ " VALUES ?x  {"+values+"}";
 					 res = JenaMethods.ExecuteQuery(requete1, ontology);	
 					 if(res!=null)
@@ -498,7 +443,7 @@ public class BKbuilding {
 							 cpt++;
 							 sol = res.next();
 							 String codeU=sol.get("x").toString();
-							 if(conceptList.contains(ontologyURI+C.separator+codeU))
+							 if(conceptList.contains(ontologyURI+Parameters.separator+codeU))
 							 { 
 								 String label=sol.get("y").toString();
 								 newUri=codeU+"/"+BkOntologiesCodes.get(ontologyURI);
@@ -509,7 +454,7 @@ public class BKbuilding {
 					 }
 					 if(cpt!=numberConcept)System.out.println("[CreateOwlFile] numberConcept est: "+numberConcept+" trouvés est: "+cpt);
 					 /* *************************** Requete2: retrieve synonyms ************************************ */
-					 requete2=C.prefix+"select distinct ?x ?y where {?x "+C.synonyms+" ?y}";
+					 requete2=Parameters.prefix+"select distinct ?x ?y where {?x "+Parameters.synonyms+" ?y}";
 					 requete2=requete2+ " VALUES ?x  {"+values+"}";
 					 
 					 res = JenaMethods.ExecuteQuery(requete2, ontology);	
@@ -522,12 +467,12 @@ public class BKbuilding {
 						 
 						 sol = res.next();
 						 String codeU=sol.get("x").toString();
-						 if(conceptList.contains(ontologyURI+C.separator+codeU))
+						 if(conceptList.contains(ontologyURI+Parameters.separator+codeU))
 						 { 
 							 String label=sol.get("y").toString();
 							 newUri=codeU+"/"+BkOntologiesCodes.get(ontologyURI);
 							 model.createClass(newUri).addProperty(SKOS.altLabel, label);}
-						 else System.out.println("[CreateOwlFile2] Be careful: "+ontologyURI+C.separator+codeU);
+						 else System.out.println("[CreateOwlFile2] Be careful: "+ontologyURI+Parameters.separator+codeU);
 						 }
 					 }						 
 				 ontology.close();
@@ -536,7 +481,7 @@ public class BKbuilding {
 					FileWriter out = null;
 					try {
 						  // XML format - long and verbose
-						  out = new FileWriter( C.BuiltBkPath);
+						  out = new FileWriter( Parameters.BuiltBkPath);
 						  model.write( out, "RDF/XML" );			 		
 						}
 					finally {
@@ -545,15 +490,14 @@ public class BKbuilding {
 					    catch (IOException ignore) {}
 					  }
 					}
-					long time=System.currentTimeMillis()-debut;
-					C.executionTime.add("createOWLfile2 "+(time)+"ms");
+
 	}
 	/* ********* charger les mappings ******************** */
 	  void chargerBK_Mappings() throws IOException
 	{
 		long debut =System.currentTimeMillis();
 		String uri_source,ontologySource, uri_target,ontologyTarget,score;
-		File f = new File(C.oboFilePath); 
+		File f = new File(Parameters.ExistingMappingsPath); 
 		BufferedReader reader = new BufferedReader(new FileReader(f)); 
 		String line = null; 
 		while ((line = reader.readLine()) != null) 
@@ -569,21 +513,21 @@ public class BKbuilding {
 
 			Noeud map=new Noeud(uri_target,ontologyTarget, Double.parseDouble(score));
 			
-			if(globalGraph.containsKey(ontologySource+C.separator+uri_source))globalGraph.get(ontologySource+C.separator+uri_source).add(map);
+			if(globalGraph.containsKey(ontologySource+Parameters.separator+uri_source))globalGraph.get(ontologySource+Parameters.separator+uri_source).add(map);
 			else
 			{
 				TreeSet<Noeud> liste=new TreeSet<>();
 				liste.add(map);
-				globalGraph.put(ontologySource+C.separator+uri_source,liste);
+				globalGraph.put(ontologySource+Parameters.separator+uri_source,liste);
 			}
 			 
 			map= new Noeud(uri_source,ontologySource, Double.parseDouble(score));
-			if(globalGraph.containsKey(ontologyTarget+C.separator+uri_target))globalGraph.get(ontologyTarget+C.separator+uri_target).add(map);
+			if(globalGraph.containsKey(ontologyTarget+Parameters.separator+uri_target))globalGraph.get(ontologyTarget+Parameters.separator+uri_target).add(map);
 			else
 			{
 				TreeSet<Noeud> liste=new TreeSet<>();
 				liste.add(map);
-				globalGraph.put(ontologyTarget+C.separator+uri_target,liste);
+				globalGraph.put(ontologyTarget+Parameters.separator+uri_target,liste);
 			}
 		}
 			catch(java.lang.NumberFormatException e)
@@ -591,9 +535,7 @@ public class BKbuilding {
 			catch(java.util.NoSuchElementException e)
 			{}
 			}
-		long time=System.currentTimeMillis()-debut;
-		C.executionTime.add("chargerBKmappings "+(time)+"ms");
-		System.out.println("[chargerBK_Mappings] globalGraph: "+globalGraph.size());
+
 	}
 	
 	/* ***************************************************************************** */
@@ -601,15 +543,15 @@ public class BKbuilding {
 	{
 		long debut =System.currentTimeMillis();
 		TreeSet<String> mappings=new TreeSet<>();
-		File BkAlignmentsFolder = new File(C.BkAlignmentsFolderPath); 
+		File BkAlignmentsFolder = new File(Parameters.BkAlignmentsFolderPath); 
 		String[] BkAlignmentsList = BkAlignmentsFolder.list();
 		for (String a : BkAlignmentsList) 
 		{
 			if(a.contains(".rdf"))
 			{
-				TreeSet<String> mappingsA = Fichier.loadOAEIAlignment(C.BkAlignmentsFolderPath+a);
+				TreeSet<String> mappingsA = Fichier.loadOAEIAlignment(Parameters.BkAlignmentsFolderPath+a);
 				System.out.println(a+" size "+mappingsA.size());
-				mappings.addAll(Fichier.loadOAEIAlignment(C.BkAlignmentsFolderPath+a));
+				mappings.addAll(Fichier.loadOAEIAlignment(Parameters.BkAlignmentsFolderPath+a));
 			}
 		}
 		String uri_source,ontologySource, uri_target,ontologyTarget,score; 
@@ -622,29 +564,26 @@ public class BKbuilding {
 			ontologyTarget=lineParser.nextElement().toString();
 			score =lineParser.nextElement().toString();			
 			Noeud map=new Noeud(uri_target,ontologyTarget, Double.parseDouble(score));
-			if(globalGraph.containsKey(ontologySource+C.separator+uri_source))
+			if(globalGraph.containsKey(ontologySource+Parameters.separator+uri_source))
 				{
-				globalGraph.get(ontologySource+C.separator+uri_source).add(map);
+				globalGraph.get(ontologySource+Parameters.separator+uri_source).add(map);
 				}
 			else
 			{
 				TreeSet<Noeud> liste=new TreeSet<>();
 				liste.add(map);
-				globalGraph.put(ontologySource+C.separator+uri_source,liste);
+				globalGraph.put(ontologySource+Parameters.separator+uri_source,liste);
 			}
 			 
 			map= new Noeud(uri_source,ontologySource, Double.parseDouble(score));
-			if(globalGraph.containsKey(ontologyTarget+C.separator+uri_target))globalGraph.get(ontologyTarget+C.separator+uri_target).add(map);
+			if(globalGraph.containsKey(ontologyTarget+Parameters.separator+uri_target))globalGraph.get(ontologyTarget+Parameters.separator+uri_target).add(map);
 			else
 			{
 				TreeSet<Noeud> liste=new TreeSet<>();
 				liste.add(map);
-				globalGraph.put(ontologyTarget+C.separator+uri_target,liste);
+				globalGraph.put(ontologyTarget+Parameters.separator+uri_target,liste);
 			}
 		}
-		long time=System.currentTimeMillis()-debut;
-
-		C.executionTime.add("chargerMappingsFromFolder "+(time)+"ms");
 		System.out.println("[chargerBKMappingsFromFolder] globalGraph: "+globalGraph.size());
 	}
 	/**
@@ -657,16 +596,18 @@ public class BKbuilding {
 	   {  
 		  for(int j=0;j<BkOntologies.length;j++)
 		  { 
-			File f=new File(C.BkOntologiesFolderPath+BkOntologies[j]);
+			  
+			File f=new File(Parameters.BKontologiesFolderPath+BkOntologies[j]);
+			System.out.println(BkOntologies[j]);
 			String targetIRI=JenaMethods.getOntologyUri(f.toURI().toURL());
-			generateBKalignment(source, f.toURI().toURL(), sourceIRI, targetIRI);			
+			generateBKalignment(Parameters.sourceOntology, f.toURI().toURL(), sourceIRI, targetIRI);			
 		  }
 	   }
 	    void getOntologyCodes() throws FileNotFoundException, IOException, URISyntaxException
 	   {	code=1;	  
 		  for(int j=0;j<BkOntologies.length;j++)
 		  { 
-			File f=new File(C.BkOntologiesFolderPath+BkOntologies[j]);
+			File f=new File(Parameters.BKontologiesFolderPath+BkOntologies[j]);
 			String targetIRI=JenaMethods.getOntologyUri(f.toURI().toURL());
 			
 			//ajouter à la liste bkontologiescodes
@@ -688,9 +629,9 @@ public class BKbuilding {
 		  { 
 			for(int j=i+1;j<BkOntologies.length;j++)
 			  { 
-				File sourceFile=new File(C.BkOntologiesFolderPath+File.separator+BkOntologies[i]);
+				File sourceFile=new File(Parameters.BKontologiesFolderPath+File.separator+BkOntologies[i]);
 				String sourceIRI=JenaMethods.getOntologyUri(sourceFile.toURI().toURL());
-				File targetFile=new File(C.BkOntologiesFolderPath+File.separator+BkOntologies[j]);
+				File targetFile=new File(Parameters.BKontologiesFolderPath+File.separator+BkOntologies[j]);
 				String targetIRI=JenaMethods.getOntologyUri(targetFile.toURI().toURL());
 				generateBKalignment(sourceFile.toURI().toURL(), targetFile.toURI().toURL(), sourceIRI, targetIRI);
 			  }
@@ -707,18 +648,18 @@ public class BKbuilding {
 	 */
 	void generateBKalignment(URL source,URL target, String sourceIRI, String targetIRI) throws IOException, URISyntaxException
 	{
-		if(ExistingAlignments.containsKey(sourceIRI+C.separator+targetIRI))
+		if(ExistingAlignments.containsKey(sourceIRI+Parameters.separator+targetIRI))
 		{
 			  System.out.println("[generateBKalignment] super il existe");
-			  String fileName=ExistingAlignments.get(sourceIRI+C.separator+targetIRI);
-			  File srcFile=new File (C.alignmentsRepositoryFolderPath+fileName);
-			  File destFile=new File(C.BkAlignmentsFolderPath+fileName);
+			  String fileName=ExistingAlignments.get(sourceIRI+Parameters.separator+targetIRI);
+			  File srcFile=new File (Parameters.alignmentsRepositoryFolderPath+fileName);
+			  File destFile=new File(Parameters.BkAlignmentsFolderPath+fileName);
 		      org.apache.commons.io.FileUtils.copyFile(srcFile, destFile);
 		}
 		else{
 			Matching matching=new Matching(source,target);
-			String alignmentName=getRandomName(C.BkAlignmentsFolderPath);
-			URL res=matching.matchOntologies(C.BkAlignmentsFolderPath+File.separator+alignmentName+".rdf");		
+			String alignmentName=getRandomName(Parameters.BkAlignmentsFolderPath);
+			URL res=matching.matchOntologies(source, target,Parameters.BkAlignmentsFolderPath+File.separator+alignmentName+".rdf");		
 			System.out.println("lurl du fichier resultat: "+res);
 
 		}
@@ -762,14 +703,14 @@ String getRandomName(String FolderPath)
 Map<String, String> getExistingAlignments()
 {
 	Map<String,String> existingAlignments=new HashMap<String,String>();
-	String[] alignments=new File(C.alignmentsRepositoryFolderPath).list();  
+	String[] alignments=new File(Parameters.alignmentsRepositoryFolderPath).list();  
 	  for (String a : alignments) 
 	  {
 		  if(a.contains(".rdf"))
 		  try
 		  {
-			  ArrayList<String> l = getAlignmentOntologies(C.alignmentsRepositoryFolderPath+a);
-			  existingAlignments.put(l.get(0)+C.separator+l.get(1), a );
+			  ArrayList<String> l = getAlignmentOntologies(Parameters.alignmentsRepositoryFolderPath+a);
+			  existingAlignments.put(l.get(0)+Parameters.separator+l.get(1), a );
 		  }
 		  catch(Exception e)
 		  {
@@ -796,7 +737,7 @@ public static void loadConcepts(String folderPath,String acronym) throws Excepti
 				if(prefLabCode!=null)
 				{
 					if(ontology.equalsIgnoreCase(acronym))
-					codeInterface.put(ontology+C.separator+prefLabCode,ontologyCode);
+					codeInterface.put(ontology+Parameters.separator+prefLabCode,ontologyCode);
 					}
 				else throw new Exception("prefLabCode VIDE");
 			}

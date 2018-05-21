@@ -25,8 +25,8 @@ import fr.inrialpes.exmo.align.parser.AlignmentParser;
 
 public class BKuse {
 
-	URL source;
-	URL target;
+	URL source=Parameters.sourceOntology;
+	URL target=Parameters.targetOntology;
 	public static String  targetAcronym, sourceAcronym;
 	String sourceIRI, targetIRI;
 	TreeSet<String> sourceUris;
@@ -153,19 +153,16 @@ public class BKuse {
 		Matching matching;
 		long debut =System.currentTimeMillis();
 		//supprimer ce qui a etait dans le dossier
-		Fichier fichier=new Fichier(C.directAlignmentFolderPath);
+		Fichier fichier=new Fichier(Parameters.directAlignmentFolderPath);
 		fichier.deleteFile();
 
 		long debut2 =System.currentTimeMillis();
-		matching=new Matching(new File(C.BuiltBkPath).toURI().toURL(), target);
-		matching.matchOntologies(C.directAlignmentFolderPath+"BK_target.rdf");	
+		URL BBK=new File(Parameters.BuiltBkPath).toURI().toURL();
+		matching=new Matching(BBK, target);
+		matching.matchOntologies(BBK,target,Parameters.directAlignmentFolderPath+"BK_target.rdf");	
 		
-		long time2 =System.currentTimeMillis()-debut2;
-		C.executionTime.add("BK matching "+(time2)+"ms");
-		
-
 		matching=new Matching(source, target);
-		URL res = matching.matchOntologies(C.directAlignmentFolderPath+"source_target.rdf" );
+		URL res = matching.matchOntologies(source,target,Parameters.directAlignmentFolderPath+"source_target.rdf" );
 		//System.out.println("results before: "+Matching.ComputeFScore(res, C.t5_R));
 		
 		chargerBKMappingsFromBuiltBK(BkOntologiesCodes);
@@ -256,8 +253,7 @@ public class BKuse {
 		 */
 		
 		derivationFunction();
-		long time=System.currentTimeMillis()-debut;
-		C.executionTime.add("BKuse "+(time)+"ms");
+
 	}
 	
 	
@@ -269,7 +265,7 @@ public class BKuse {
 		Matching matching;
 		long debut =System.currentTimeMillis();
 		//supprimer ce qui a etait dans le dossier
-		Fichier fichier=new Fichier(C.directAlignmentFolderPath);
+		Fichier fichier=new Fichier(Parameters.directAlignmentFolderPath);
 		fichier.deleteFile();
 
 		long debut2 =System.currentTimeMillis();
@@ -278,7 +274,7 @@ public class BKuse {
 
 		StringTokenizer lineParser;
 		for ( String m:BkGraph.keySet()) {
-			lineParser = new StringTokenizer(m, C.separator); 
+			lineParser = new StringTokenizer(m, Parameters.separator); 
 			String os=lineParser.nextToken();
 			String cs=lineParser.nextToken();
 			for (Noeud n : BkGraph.get(m)) 
@@ -300,27 +296,22 @@ public class BKuse {
 			
 			}
 		}
-		Fichier.deleteFile(C.BkFolderPath+"mappings.csv");
+		Fichier.deleteFile(Parameters.BkFolderPath+"mappings.csv");
 
 		Fichier f=new Fichier("");
-		f.ecrire(C.BkFolderPath+"mappings.csv", "id1,o1,id2,o2,a"+Fichier.retourAlaLigne+Fichier.treeToString(t1));
+		f.ecrire(Parameters.BkFolderPath+"mappings.csv", "id1,o1,id2,o2,a"+Fichier.retourAlaLigne+Fichier.treeToString(t1));
 
 		BkGraph.clear();
 
 		//supprimer ce qui �tait dans le dossier
-        fichier.path=C.derivationResultFolderPath;
+        fichier.path=Parameters.derivationResultFolderPath;
 		fichier.deleteFile();
 		
-		loadMappingsToNeo4J(C.BkFolderPath);
-		Neo4Jderivation(C.t1_R);
+		loadMappingsToNeo4J(Parameters.BkFolderPath);
 		
-		
-		
-		
-		
-		//derivationFunction(true);
-		long time=System.currentTimeMillis()-debut;
-		C.executionTime.add("BKuse "+(time)+"ms");
+		if(Parameters.derivationStrategy==Parameters.derivationStrategies.neo4j)
+		 Neo4Jderivation();
+		else derivationFunction();
 	}
 	/**
 	 * 
@@ -332,16 +323,11 @@ public class BKuse {
 		Matching matching;
 		long debut =System.currentTimeMillis();
 		//supprimer ce qui a etait dans le dossier
-		Fichier fichier=new Fichier(C.directAlignmentFolderPath);
+		Fichier fichier=new Fichier(Parameters.directAlignmentFolderPath);
 		fichier.deleteFile();
-
-		long debut2 =System.currentTimeMillis();
-		matching=new Matching(new File(C.BuiltBkPath).toURI().toURL(), target);
-		matching.matchOntologies(C.directAlignmentFolderPath+"BK_target.rdf");	
-		
-		long time2 =System.currentTimeMillis()-debut2;
-		C.executionTime.add("BK matching "+(time2)+"ms");
-		
+		URL BBK=new File(Parameters.BuiltBkPath).toURI().toURL();
+		matching=new Matching(new File(Parameters.BuiltBkPath).toURI().toURL(), target);
+		matching.matchOntologies(BBK,target,Parameters.directAlignmentFolderPath+"BK_target.rdf");	
 		//System.out.println("results before: "+Matching.ComputeFScore(res, C.t5_R));
 		
 		chargerBKMappingsFromBuiltBK(BkOntologiesCodes);
@@ -353,7 +339,7 @@ public class BKuse {
 		TreeSet<String> subClass=new TreeSet<>();
 		StringTokenizer lineParser;
 		for ( String m:BkGraph.keySet()) {
-			lineParser = new StringTokenizer(m, C.separator); 
+			lineParser = new StringTokenizer(m, Parameters.separator); 
 			String os=lineParser.nextToken();
 			String cs=lineParser.nextToken();
 			for (Noeud n : BkGraph.get(m)) 
@@ -391,26 +377,29 @@ public class BKuse {
 				}
 			}
 		}
-		Fichier.deleteFile(C.BkFolderPath+"mappings.csv");
-		Fichier.deleteFile(C.BkFolderPath+"obo.csv");
-		Fichier.deleteFile(C.BkFolderPath+"subclass.csv");
-		Fichier.deleteFile(C.BkFolderPath+"superclass.csv");
+		Fichier.deleteFile(Parameters.BkFolderPath+"mappings.csv");
+		Fichier.deleteFile(Parameters.BkFolderPath+"obo.csv");
+		Fichier.deleteFile(Parameters.BkFolderPath+"subclass.csv");
+		Fichier.deleteFile(Parameters.BkFolderPath+"superclass.csv");
 		Fichier f=new Fichier("");
-		f.ecrire(C.BkFolderPath+"mappings.csv", "id1,o1,id2,o2,a"+Fichier.retourAlaLigne+Fichier.treeToString(t1));
-		f.ecrire(C.BkFolderPath+"obo.csv", "id1,o1,id2,o2"+Fichier.retourAlaLigne+Fichier.treeToString(t2));
-		f.ecrire(C.BkFolderPath+"subclass.csv", "id1,o1,id2,o2,a"+Fichier.retourAlaLigne+Fichier.treeToString(subClass));
-		f.ecrire(C.BkFolderPath+"superclass.csv", "id1,o1,id2,o2"+Fichier.retourAlaLigne+Fichier.treeToString(superClass));
+		f.ecrire(Parameters.BkFolderPath+"mappings.csv", "id1,o1,id2,o2,a"+Fichier.retourAlaLigne+Fichier.treeToString(t1));
+		f.ecrire(Parameters.BkFolderPath+"obo.csv", "id1,o1,id2,o2"+Fichier.retourAlaLigne+Fichier.treeToString(t2));
+		f.ecrire(Parameters.BkFolderPath+"subclass.csv", "id1,o1,id2,o2,a"+Fichier.retourAlaLigne+Fichier.treeToString(subClass));
+		f.ecrire(Parameters.BkFolderPath+"superclass.csv", "id1,o1,id2,o2"+Fichier.retourAlaLigne+Fichier.treeToString(superClass));
 		BkGraph.clear();
 		/* *************************************************************** */	
-		C.derivedCheminsPath=C.derivationResultFolderPath+"cheminEnriched.csv";
-		f=new Fichier(C.derivedCheminsPath);
+		Parameters.derivedCheminsPath=Parameters.derivationResultFolderPath+"cheminEnriched.csv";
+		f=new Fichier(Parameters.derivedCheminsPath);
 		f.deleteFile();
 		
-		loadMappingsToNeo4J(C.BkFolderPath);
-		Neo4Jderivation(C.ma_nci_Ref);
-	    //derivationFunction();
-		long time=System.currentTimeMillis()-debut;
-		C.executionTime.add("BKuse "+(time)+"ms");
+		
+		if(Parameters.derivationStrategy==Parameters.derivationStrategies.neo4j)
+		{
+			loadMappingsToNeo4J(Parameters.BkFolderPath);
+			Neo4Jderivation();
+		}
+		else 
+			derivationFunction();
 	}
 	//*******************************************************************************************	
 	/*
@@ -421,9 +410,9 @@ public class BKuse {
 		long debut=System.currentTimeMillis();
 		//delete existing graph
 		String query="MATCH p=()-[r]->() delete r";
-		C.session.run(query);
+		Parameters.session.run(query);
 		query="MATCH (n:concept) delete n";
-		C.session.run(query);
+		Parameters.session.run(query);
 		
 		//charger mappings extracted by YAM++
 		String destFolder="C:/Users/annane/Documents/Neo4j/DB/import/";
@@ -440,7 +429,7 @@ public class BKuse {
 				 "merge (concept1:concept { id:line.id1,ontology:line.o1 }) "+
 				 "merge (concept2:concept { id:line.id2,ontology:line.o2 }) "+
 				 "CREATE (concept1)-[:equivalent{a:toFloat(line.a),b:toFloat(line.b),c:toInt(line.c),d:line.d}]->(concept2);";
-	C.session.run(query);
+	Parameters.session.run(query);
 	
 	 sourceFile=new File(sourceFolder+"subclass.csv");
 	 destFile=new File(destFolder+"subclass.csv");
@@ -453,7 +442,7 @@ public class BKuse {
 			 "merge (concept1:concept { id:line.id1,ontology:line.o1 }) "+
 			 "merge (concept2:concept { id:line.id2,ontology:line.o2 }) "+
 			 "CREATE (concept1)-[:isA{a:toFloat(line.a),b:toFloat(line.b),c:toInt(line.c),d:line.d}]->(concept2);";
-C.session.run(query);
+Parameters.session.run(query);
 	
 	//charger OBO mappings
 	sourceFile=new File(sourceFolder+"obo.csv");
@@ -467,8 +456,77 @@ C.session.run(query);
          "merge (concept1:concept { id:line.id1,ontology:line.o1 }) "+
          "merge (concept2:concept { id:line.id2,ontology:line.o2 }) "+
          "CREATE (concept1)-[:obo]->(concept2);";
-	C.session.run(query);
+	Parameters.session.run(query);
 	}
+	
+	/*
+	 * *****************************Derivation with Neo4J
+	 */ 
+	   public  void Neo4Jderivation() throws Exception
+	   {
+		 long debut=System.currentTimeMillis();
+		 String codeCible;
+		 int NodesNumber;
+		 String path;
+		 String res;	   	
+	   	System.out.println("******************************* Derivation with Neo4j is started");
+	   for (String uriS : sourceUris) 
+	   {
+		   String id=uriS.substring(uriS.indexOf(Parameters.separator)+1);
+		   String ontology=uriS.substring(0,uriS.indexOf(Parameters.separator));
+
+		   String	query="MATCH p=(n:concept{ontology:'"+ontology+"',id:'"+id+"'})-"
+	   			+ "[r*1.."+Parameters.derivationMaxPathLength+"]-(m:concept{ontology:'"+targetAcronym+"'})"+
+	   			"RETURN distinct m.id as target, p";
+	   	//	System.out.println(query);
+
+	   		StatementResult result= null;
+	   		result=Parameters.session.run(query);
+
+	   		if(result!=null && result.hasNext())
+	   		{
+	   			while(result.hasNext())
+	   			{	path="";					
+	   				Record record=result.next();
+	   				Path p=record.get("p").asPath();
+	   				ArrayList<String> nodes=null;
+	   				ArrayList<Double> scores=null;
+	   				String uriTarget=record.get("target").asString();
+	   				if(targetUris.contains(targetAcronym+Parameters.separator+uriTarget))
+	   				{ 	
+
+	   					this.matchedSourceUris.add(uriS);
+	   					nodes=new ArrayList<>();
+	   				    scores=new ArrayList<>();
+	   					for (Node noeud : p.nodes()) {
+	   						//System.out.println(noeud.get("id").asString()+"#"+noeud.get("ontology").asString());
+							nodes.add(noeud.get("id").asString()+Parameters.separator+noeud.get("ontology").asString());
+						}
+		   				//System.out.println(nodes.size()+" nodes");
+	   					scores.add(null);
+	   					for (Relationship r : p.relationships()) {
+							if(r.hasType("obo"))scores.add(2.0);
+							else if(r.hasType("isA"))scores.add(3.0);
+							else scores.add(r.get("a").asDouble());
+						}
+	   					path="$$";
+		   			//	System.out.println(nodes.size()+" nodes");
+	   					for(int i=0;i<nodes.size();i++)
+	   					{
+	   						path=path+scores.get(i)+Parameters.separator+nodes.get(i)+"$$";
+	   					}
+	   					//System.out.println(path);
+
+	   					Fichier f=new Fichier("");
+	   					f.ecrire(Parameters.derivedCheminsPath, id+','+uriTarget+','+nodes.size()+','+path+','+Fichier.retourAlaLigne);
+	   			    }
+	   				
+	   		}//end while	   		
+	   	}
+	   	
+	   }
+		long time=System.currentTimeMillis()-debut;
+	   }
 	/*
 	 * *****************************Derivation with Neo4J
 	 */ 
@@ -487,16 +545,16 @@ C.session.run(query);
 	   	System.out.println("******************************* Derivation with Neo4j is started");
 	   for (String uriS : sourceUris) 
 	   {
-		   String id=uriS.substring(uriS.indexOf(C.separator)+1);
-		   String ontology=uriS.substring(0,uriS.indexOf(C.separator));
+		   String id=uriS.substring(uriS.indexOf(Parameters.separator)+1);
+		   String ontology=uriS.substring(0,uriS.indexOf(Parameters.separator));
 
 		   String	query="MATCH p=(n:concept{ontology:'"+ontology+"',id:'"+id+"'})-"
-	   			+ "[r*"+C.stepMin+".."+C.stepMax+"]-(m:concept{ontology:'"+targetAcronym+"'})"+
+	   			+ "[r*1.."+Parameters.derivationMaxPathLength+"]-(m:concept{ontology:'"+targetAcronym+"'})"+
 	   			"RETURN distinct m.id as target, p";
 	   	//	System.out.println(query);
 
 	   		StatementResult result= null;
-	   		result=C.session.run(query);
+	   		result=Parameters.session.run(query);
 
 	   		if(result!=null && result.hasNext())
 	   		{
@@ -507,7 +565,7 @@ C.session.run(query);
 	   				ArrayList<String> nodes=null;
 	   				ArrayList<Double> scores=null;
 	   				String uriTarget=record.get("target").asString();
-	   				if(targetUris.contains(targetAcronym+C.separator+uriTarget))
+	   				if(targetUris.contains(targetAcronym+Parameters.separator+uriTarget))
 	   				{ 	
 
 	   					this.matchedSourceUris.add(uriS);
@@ -515,7 +573,7 @@ C.session.run(query);
 	   				    scores=new ArrayList<>();
 	   					for (Node noeud : p.nodes()) {
 	   						//System.out.println(noeud.get("id").asString()+"#"+noeud.get("ontology").asString());
-							nodes.add(noeud.get("id").asString()+C.separator+noeud.get("ontology").asString());
+							nodes.add(noeud.get("id").asString()+Parameters.separator+noeud.get("ontology").asString());
 						}
 		   				//System.out.println(nodes.size()+" nodes");
 	   					scores.add(null);
@@ -528,14 +586,14 @@ C.session.run(query);
 		   			//	System.out.println(nodes.size()+" nodes");
 	   					for(int i=0;i<nodes.size();i++)
 	   					{
-	   						path=path+scores.get(i)+C.separator+nodes.get(i)+"$$";
+	   						path=path+scores.get(i)+Parameters.separator+nodes.get(i)+"$$";
 	   					}
 	   					//System.out.println(path);
 	   					if(ref.contains(id+','+uriTarget)||ref.contains(uriTarget+','+id))res="true";
 	   					else if(refNeutre.contains(id+','+uriTarget)||refNeutre.contains(uriTarget+','+id))res="neutre";
 	   					else res="false";
 	   					Fichier f=new Fichier("");
-	   					f.ecrire(C.derivedCheminsPath, id+','+uriTarget+','+nodes.size()+','+path+','+res+Fichier.retourAlaLigne);
+	   					f.ecrire(Parameters.derivedCheminsPath, id+','+uriTarget+','+nodes.size()+','+path+','+res+Fichier.retourAlaLigne);
 	   			    }
 	   				
 	   		}//end while	   		
@@ -570,13 +628,13 @@ C.session.run(query);
 	public void chargerBKMappingsFromBuiltBK(Map<String, String> BkOntologiesCodes) throws Exception
 	{
 		long debut =System.currentTimeMillis();
-		File repertoire = new File(C.directAlignmentFolderPath); 
+		File repertoire = new File(Parameters.directAlignmentFolderPath); 
 		String[] alignments = repertoire.list();
 		TreeSet<String> mappings=new TreeSet<>();
 		for (String a : alignments) {
-			Fichier fichier=new Fichier(C.directAlignmentFolderPath);
-			if(a.equals("BK_target.rdf"))mappings.addAll(loadOAEIAlignmentWithBkUris(C.directAlignmentFolderPath+a));
-			else mappings.addAll(fichier.loadOAEIAlignment(C.directAlignmentFolderPath+a));
+			Fichier fichier=new Fichier(Parameters.directAlignmentFolderPath);
+			if(a.equals("BK_target.rdf"))mappings.addAll(loadOAEIAlignmentWithBkUris(Parameters.directAlignmentFolderPath+a));
+			else mappings.addAll(fichier.loadOAEIAlignment(Parameters.directAlignmentFolderPath+a));
 		}
 		
 		String uri_source,ontologySource, uri_target,ontologyTarget,score;
@@ -596,25 +654,24 @@ C.session.run(query);
 					
 			Noeud map=new Noeud(uri_target,ontologyTarget, Double.parseDouble(score));
 			//System.out.println(uri_source+ontologySource);
-			if(BkGraph.containsKey(ontologySource+C.separator+uri_source))BkGraph.get(ontologySource+C.separator+uri_source).add(map);
+			if(BkGraph.containsKey(ontologySource+Parameters.separator+uri_source))BkGraph.get(ontologySource+Parameters.separator+uri_source).add(map);
 			else
 			{
 				TreeSet<Noeud> liste=new TreeSet<>();
 				liste.add(map);
-				BkGraph.put(ontologySource+C.separator+uri_source,liste);
+				BkGraph.put(ontologySource+Parameters.separator+uri_source,liste);
 			}
 			 
 			map= new Noeud(uri_source,ontologySource, Double.parseDouble(score));
-			if(BkGraph.containsKey(ontologyTarget+C.separator+uri_target))BkGraph.get(ontologyTarget+C.separator+uri_target).add(map);
+			if(BkGraph.containsKey(ontologyTarget+Parameters.separator+uri_target))BkGraph.get(ontologyTarget+Parameters.separator+uri_target).add(map);
 			else
 			{
 				TreeSet<Noeud> liste=new TreeSet<>();
 				liste.add(map);
-				BkGraph.put(ontologyTarget+C.separator+uri_target,liste);
+				BkGraph.put(ontologyTarget+Parameters.separator+uri_target,liste);
 			}
 		}
-		long time=System.currentTimeMillis()-debut;
-		C.executionTime.add("chargerBKmappingsFromeBuiltBK "+(time)+"ms");
+
 	}
 	
 	
@@ -623,7 +680,7 @@ C.session.run(query);
 	{
 		System.out.println("I start derivation with obo mappings");
 		long debut =System.currentTimeMillis();
-		Fichier fichier=new Fichier(C.derivationResultFolderPath);
+		Fichier fichier=new Fichier(Parameters.derivationResultFolderPath);
 		fichier.deleteFile();
 		ArrayList<String> treatedConcepts=new ArrayList<String>();
 		ArrayList<Noeud> liste;
@@ -640,7 +697,7 @@ C.session.run(query);
 							treatedConcepts.clear();
 							paths.clear();
 							
-							StringTokenizer kk=new StringTokenizer(ontologyCode,C.separator);
+							StringTokenizer kk=new StringTokenizer(ontologyCode,Parameters.separator);
 							String ontology=kk.nextToken();
 							String uri=kk.nextToken();
 							
@@ -658,19 +715,19 @@ C.session.run(query);
 								if(!treatedConcepts.contains(c.code+c.ontology))
 								{
 									treatedConcepts.add(c.code+c.ontology);
-									TreeSet<Noeud> s = BkGraph.get(c.ontology+C.separator+c.code);
+									TreeSet<Noeud> s = BkGraph.get(c.ontology+Parameters.separator+c.code);
 									
 									if(s!=null)
 									{
 										for (Noeud targetNode : s) 
 									    {
 										
-											if(!sourceUris.contains(targetNode.ontology+C.separator+targetNode.code))
+											if(!sourceUris.contains(targetNode.ontology+Parameters.separator+targetNode.code))
 											{
 
 												listePrime=(ArrayList<Noeud>) liste.clone();
 												listePrime.add(targetNode);
-												if(targetUris.contains(targetNode.ontology+C.separator+targetNode.code))
+												if(targetUris.contains(targetNode.ontology+Parameters.separator+targetNode.code))
 												{
 													System.out.println("I found another one!");
 													paths.add(listePrime);
@@ -688,8 +745,6 @@ C.session.run(query);
 							}//endwhile
 							if(paths.size()>0)writePaths();
 						}
-						long time=System.currentTimeMillis()-debut;
-						C.executionTime.add("derivation "+(time)+"ms");
 	}
 	
 	//*******************************************derivationFunction*******************************************
@@ -697,7 +752,7 @@ C.session.run(query);
 	{
 		System.out.println("I start derivation");
 		long debut =System.currentTimeMillis();
-		Fichier fichier=new Fichier(C.derivationResultFolderPath);
+		Fichier fichier=new Fichier(Parameters.derivationResultFolderPath);
 		fichier.deleteFile();
 		ArrayList<String> treatedConcepts=new ArrayList<String>();
 		ArrayList<Noeud> liste;
@@ -726,7 +781,7 @@ C.session.run(query);
 								if(!treatedConcepts.contains(c.code+c.ontology))
 								{
 									treatedConcepts.add(c.code+c.ontology);
-									TreeSet<Noeud> s = BkGraph.get(c.ontology+C.separator+c.code);
+									TreeSet<Noeud> s = BkGraph.get(c.ontology+Parameters.separator+c.code);
 									
 									if(s!=null)
 									{
@@ -752,8 +807,7 @@ C.session.run(query);
 							}//endwhile
 							if(paths.size()>0)writePaths();
 						}
-						long time=System.currentTimeMillis()-debut;
-						C.executionTime.add("derivation "+(time)+"ms");
+
 	}
 	
 	
@@ -774,7 +828,7 @@ C.session.run(query);
 			for (Noeud noeud : p)
 			{
 				//sourcesPath=sourcesPath+noeud.source;
-				conceptsPath=conceptsPath+"$$"+noeud.score+C.separator+noeud.code+C.separator+noeud.ontology;
+				conceptsPath=conceptsPath+"$$"+noeud.score+Parameters.separator+noeud.code+Parameters.separator+noeud.ontology;
 			}
 			//System.out.println(CN+","+CM);
 			String res="false";
@@ -784,7 +838,7 @@ C.session.run(query);
 			//System.out.println(path);
 			allPaths=allPaths+path;
 		}
-		Fichier fichier=new Fichier(C.derivedCheminsPath);
+		Fichier fichier=new Fichier(Parameters.derivedCheminsPath);
 		fichier.ecrire(allPaths);
 	}
 	
