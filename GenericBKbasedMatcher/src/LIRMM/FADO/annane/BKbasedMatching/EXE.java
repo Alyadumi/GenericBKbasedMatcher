@@ -25,22 +25,30 @@ public class EXE {
 		
 		
 		//Parameters
+		Parameters.derivationStrategy=Parameters.derivationStrategies.neo4j;
+		Parameters.BKselectionInternalExploration=false;
+		File sourceOntologyFile=new File(C.t1_fma);//source ontology
+		File targetOntologyFile=new File(C.t1_nci);//target ontology
+		Parameters.sourceOntology=sourceOntologyFile.toURI().toURL();
+		Parameters.targetOntology=targetOntologyFile.toURI().toURL();
 		
 		/**
 		 * Initializing driver and session variables is necessary only if you want to use Neo4j for the derivation process.
 		 */
 		Parameters.driver = GraphDatabase.driver( "bolt://localhost:7687", AuthTokens.basic("neo4j", "aminaamina")  );
 		Parameters.session=Parameters.driver.session();
-		File sourceOntologyFile=new File(sourcePath);//source ontology
-		File targetOntologyFile=new File(targetPath);//target ontology
-		Parameters.sourceOntology=sourceOntologyFile.toURI().toURL();
-		Parameters.targetOntology=targetOntologyFile.toURI().toURL();
-		if(sourceOntologyFile.exists()&&targetOntologyFile.exists())
+		
+
+		
+
+		
+		//match the input ontologies if they exist
+		if(Parameters.matcher!=null && sourceOntologyFile.exists()&&targetOntologyFile.exists())
 		{
 	    Matching matcher=new Matching(sourceOntologyFile.toURI().toURL(), targetOntologyFile.toURI().toURL());
 	    URL res=matcher.BkBasedMatching();//res will contain the URL of the generated alignment
 	    System.out.println("the generated alignment is here: "+res);
-	    matcher.ComputeFScore(res, referenceAlignment);
+	    matcher.ComputeFScore(res, C.t1_R);
 		}
 		else
 			System.out.println("One of the ontologies to align does not exist!");

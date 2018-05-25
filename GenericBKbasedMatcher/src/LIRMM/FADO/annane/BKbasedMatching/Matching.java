@@ -52,12 +52,9 @@ public class Matching {
 	
 	public void BkBasedMatching(TreeSet<String> URIs) throws Exception
 	{
-		URL res=null;
 		BKbuilding buildBK=new BKbuilding();
 		buildBK.sourceIRI=sourceOntologyURI;
-		Map<String, TreeSet<Noeud>> builtBk = buildBK.BuildEnrichedBK(URIs);
-		System.out.println("la taille du BK selectionnée est de: "+builtBk.size() );
-		
+		Map<String, TreeSet<Noeud>> builtBk = buildBK.BuildEnrichedBK(URIs);		
 		BKuse useBK=new BKuse(Parameters.sourceOntology, Parameters.targetOntology,URIs);
 		useBK.sourceIRI=sourceOntologyURI;
 		useBK.targetIRI=targetOntologyURI;

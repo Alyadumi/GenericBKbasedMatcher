@@ -52,7 +52,11 @@ public class Parameters {
 			+ "PREFIX BIRNLEX:<http://bioontology.org/projects/ontologies/birnlex#> ";
 	public static final String synonyms="oboInOwl:hasExactSynonym|oboInOwl:hasRelatedSynonym|skos:altLabel|<http://purl.bioontology.org/ontology/SYN#synonym>|<http://www.ebi.ac.uk/efo/alternative_term>|<http://purl.obolibrary.org/obo/synonym>|<http://scai.fraunhofer.de/CSEO#Synonym>|BIRNLEX:synonyms";
 	public static final String prefLabs="rdfs:label|skos:prefLabel|BIRNLEX:preferred_label";
-    
+	public static String BK_manual_mappings_path=BkFolderPath+"manual_mappings.csv";
+	public static String BK_automatic_mappings_path=BkFolderPath+"automatic_mappings.csv";
+	public static String BK_target_by_classes_path=BkFolderPath+"target_by_classes.csv";
+	public static String BK_target_classes_path=BkFolderPath+"target_classes.csv";
+	public static String neo4j_import_folder="C:/Users/annane/Documents/Neo4j/DB/import/";
 	
        
     
