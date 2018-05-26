@@ -3,11 +3,14 @@ package LIRMM.FADO.annane.BKbasedMatching;
 import java.io.File;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.neo4j.driver.v1.AuthTokens;
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.GraphDatabase;
 import org.neo4j.driver.v1.Session;
+
 
 public class EXE {
 
@@ -27,8 +30,8 @@ public class EXE {
 		//Parameters
 		Parameters.derivationStrategy=Parameters.derivationStrategies.neo4j;
 		Parameters.BKselectionInternalExploration=false;
-		File sourceOntologyFile=new File(C.t1_fma);//source ontology
-		File targetOntologyFile=new File(C.t1_nci);//target ontology
+		File sourceOntologyFile=new File(C.mouse);//source ontology
+		File targetOntologyFile=new File(C.human);//target ontology
 		Parameters.sourceOntology=sourceOntologyFile.toURI().toURL();
 		Parameters.targetOntology=targetOntologyFile.toURI().toURL();
 		
@@ -37,18 +40,28 @@ public class EXE {
 		 */
 		Parameters.driver = GraphDatabase.driver( "bolt://localhost:7687", AuthTokens.basic("neo4j", "aminaamina")  );
 		Parameters.session=Parameters.driver.session();
+		Parameters.derivationMaxPathLength=4;
 		
-
+		/**
+		 * These parameters are necessary if we want to derive mappings with other relations than equivalence
+		 */
+		Parameters.BKselectionInternalExploration=true;
+		Parameters.BKselectionExplorationLength=1;
+		Parameters.BKselectionExplorationRelations= new ArrayList<Relation>();
+		Relation r=new Relation(org.apache.jena.vocabulary.RDFS.subClassOf.toString(),"<", "subClassOf");
+		Parameters.BKselectionExplorationRelations.add(r);
 		
-
+		Parameters.mappingSelectionThreshold=0.1;
+		
+		Parameters.logMapRepair=false;
 		
 		//match the input ontologies if they exist
 		if(Parameters.matcher!=null && sourceOntologyFile.exists()&&targetOntologyFile.exists())
 		{
-	    Matching matcher=new Matching(sourceOntologyFile.toURI().toURL(), targetOntologyFile.toURI().toURL());
-	    URL res=matcher.BkBasedMatching();//res will contain the URL of the generated alignment
-	    System.out.println("the generated alignment is here: "+res);
-	    matcher.ComputeFScore(res, C.t1_R);
+			Matching matcher=new Matching(sourceOntologyFile.toURI().toURL(), targetOntologyFile.toURI().toURL());
+			URL res=matcher.BkBasedMatching();//res will contain the URL of the generated alignment
+			System.out.println("the generated alignment is here: "+res);
+			matcher.ComputeFScore(res, C.ma_nci_Ref);
 		}
 		else
 			System.out.println("One of the ontologies to align does not exist!");

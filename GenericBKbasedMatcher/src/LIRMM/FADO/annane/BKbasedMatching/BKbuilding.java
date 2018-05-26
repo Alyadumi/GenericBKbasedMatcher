@@ -10,6 +10,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -42,6 +43,7 @@ public class BKbuilding {
 	public static HashMap<String, String > codeInterface=new HashMap<>();
 	public static HashMap<String, String> sourceElements ;
 
+
 	public static HashMap<String, String> ontologyAcronym;
 	int code;
 	
@@ -50,8 +52,8 @@ public class BKbuilding {
 	}
 	
 
-	Map<String, TreeSet<Noeud>> globalGraph=new HashMap<String, TreeSet<Noeud>>();
-	Map<String, TreeSet<Noeud>> BkGraph=new HashMap<String, TreeSet<Noeud>>();
+	Map<String, TreeSet<Mapping>> globalGraph=new HashMap<String, TreeSet<Mapping>>();
+	Map<String, TreeSet<Mapping>> BkGraph=new HashMap<String, TreeSet<Mapping>>();
 
 
 	public static void main(String[] args) {
@@ -78,7 +80,7 @@ public class BKbuilding {
 	 * @return
 	 * @throws Exception
 	 */
-	public Map<String, TreeSet<Noeud>> BuildBK() throws Exception
+	public Map<String, TreeSet<Mapping>> BuildBK() throws Exception
 	{
 		long debut=System.currentTimeMillis();		
 		Fichier folder=new Fichier(Parameters.BkAlignmentsFolderPath);
@@ -108,13 +110,13 @@ public class BKbuilding {
 	 * @return
 	 * @throws Exception
 	 */
-	public Map<String, TreeSet<Noeud>> BuildEnrichedBK(TreeSet<String> URIs) throws Exception
+	public Map<String, TreeSet<Mapping>> BuildEnrichedBK(TreeSet<String> URIs) throws Exception
 	{
-		long debut=System.currentTimeMillis();	
 		chargerBKMappingsFromFolder();
 		if(Parameters.ExistingMappingsPath!=null)chargerBK_Mappings();
+		//Select the BK concepts related to the no matched source concepts directly or indirectly
 		selectSubGraph(URIs);
-		enrichWithChildrenAndFathers();
+		enrichWithRelatedClasses();
 		createOwlFile2();
 		return BkGraph;
 	}
@@ -126,11 +128,10 @@ public class BKbuilding {
 	/* ***************************************************************************************** */
 	void selectSubGraph(TreeSet<String> URIs) throws Exception
 	{
-	long debut =System.currentTimeMillis();
 	 TreeSet<String> sourceElements = JenaMethods.getFirstSelectedConcepts(URIs, sourceIRI);
 	 TreeSet<String> untreated=new TreeSet<>(), treated=new TreeSet<>();
 	 untreated.addAll(sourceElements);
-	 TreeSet<Noeud> l;
+	 TreeSet<Mapping> l;
 	 String e,m; 
 	 BkGraph.clear();
 	 while (untreated.size()>0) 
@@ -143,8 +144,8 @@ public class BKbuilding {
 		 if(l!=null)
 		 {	
 			 BkGraph.put(e,l);
-			 for (Noeud noeud : l) {
-				m=noeud.ontology+Parameters.separator+noeud.code;
+			 for (Mapping Mapping : l) {
+				m=Mapping.ontology+Parameters.separator+Mapping.code;
 				if(!treated.contains(m))
 				{
 					untreated.add(m);
@@ -152,10 +153,6 @@ public class BKbuilding {
 			}
 		 }
 	}
-	 System.out.println("La taille globale du graph: "+globalGraph.size());
-	 System.out.println("La taille du graph BK: "+BkGraph.size());
-	// globalGraph.clear();
-	// enrichWithChildrenAndFathers();
 	}
 	
 	
@@ -188,57 +185,13 @@ public class BKbuilding {
 		}	
 		return ontologyUriCode;
 	}
-	
-	/**
-	 * 
-	 * @param ontologySource
-	 * @param obo
-	 * @throws Exception
-	 */
-	void selectSubGraph(Model ontologySource,boolean obo) throws Exception
-	{
-	long debut =System.currentTimeMillis();
-	 sourceElements = loadOntologyElementsForSelection(ontologySource,sourceAcronym,sourceNeedInterface);
-	 System.out.println(sourceElements.keySet());
-	 TreeSet<String> untreated=new TreeSet<>(), treated=new TreeSet<>();
-	 untreated.addAll(sourceElements.keySet());
-	 TreeSet<Noeud> l;
-	 String e,m; 
-	 BkGraph.clear();
-	 while (untreated.size()>0) 
-	 {
-
-		 e=untreated.first();
-		 //System.out.println(e);
-		 untreated.remove(e);
-		 treated.add(e);
-		 l = globalGraph.get(e);
-
-		 if(l!=null)
-		 {	
-			 BkGraph.put(e,l);
-			 for (Noeud noeud : l) {
-				m=noeud.ontology+Parameters.separator+noeud.code;
-				if(!treated.contains(m))
-				{
-					untreated.add(m);
-				}
-			}
-		 }
-	}
-	 System.out.println("La taille globale du graph: "+globalGraph.size());
-	 System.out.println("La taille du graph BK: "+BkGraph.size());
-	// globalGraph.clear();
-	// enrichWithChildrenAndFathers();
-	}
 	/* ***************************************************************************************** */
 	void selectSubGraph(Model ontologySource) throws Exception
 	{
-	long debut =System.currentTimeMillis();
 	 TreeSet<String> sourceElements = JenaMethods.loadOntologyElementsForSelection(ontologySource,sourceIRI);
 	 TreeSet<String> untreated=new TreeSet<>(), treated=new TreeSet<>();
 	 untreated.addAll(sourceElements);
-	 TreeSet<Noeud> l;
+	 TreeSet<Mapping> l;
 	 String e,m; 
 	 BkGraph.clear();
 	 while (untreated.size()>0) 
@@ -251,8 +204,8 @@ public class BKbuilding {
 		 if(l!=null)
 		 {	
 			 BkGraph.put(e,l);
-			 for (Noeud noeud : l) {
-				m=noeud.ontology+Parameters.separator+noeud.code;
+			 for (Mapping Mapping : l) {
+				m=Mapping.ontology+Parameters.separator+Mapping.code;
 				if(!treated.contains(m))
 				{
 					untreated.add(m);
@@ -266,20 +219,118 @@ public class BKbuilding {
 	// enrichWithChildrenAndFathers();
 	}
 	/* *********************************************************************************************** */
-	 void enrichWithChildrenAndFathers() throws MalformedURLException, URISyntaxException
+	 void enrichWithRelatedClasses() throws MalformedURLException, URISyntaxException
 	 {
-
-			long debut =System.currentTimeMillis();
 			Model ontology=null;
-			String fathers="", children;
+			String fathers="",
+					children;
 			ResultSet res;
 			String newUri;
-			QuerySolution sol;		
-			TreeSet<String> conceptList=new TreeSet<>();
-			conceptList.addAll(BkGraph.keySet());
+			QuerySolution sol;	
+			
+			TreeSet<String> newConcepts=new TreeSet<>();
+			HashMap<String, String> ontologyConcepts;
+			HashMap<String, String> ontologyPath = localizeBKontologyPaths();
+			newConcepts.addAll(BkGraph.keySet());
+
+			for (String ontoURI : ontologyPath.keySet()) 
+			{
+				String path=ontologyPath.get(ontoURI);
+				ontology=JenaMethods.LoadOntologyModelWithJena(path);
+				for (Relation relation : Parameters.BKselectionExplorationRelations) 	
+				{
+					for(int i=1;i<=Parameters.BKselectionExplorationLength;i++);
+					{
+						//organize the selected concepts per ontology
+						ontologyConcepts = categorizeConcepts(newConcepts);
+						newConcepts=new TreeSet<>();
+						/* ********************** looking for fathers *********************************** */
+						String Query=Parameters.prefix+"SELECT ?c ?f  where {?c <"+relation+"> ?f} ";
+						if(ontologyConcepts.get(ontoURI)!=null)
+						{
+							Query=Query+ " VALUES ?c  {"+ontologyConcepts.get(ontoURI)+"}";
+							res = JenaMethods.ExecuteQuery(Query, ontology);
+							if(res!=null)
+							{
+								while(res.hasNext())
+								{
+									sol = res.next();
+									String fatherURI=sol.get("f").toString();
+									if(fatherURI.contains("http"))
+									{
+										String fatherConcept=ontoURI+Parameters.separator+fatherURI;
+										String childURI=sol.get("c").toString();
+										String childConcept=ontoURI+Parameters.separator+childURI;
+										if(!BkGraph.containsKey(fatherConcept))
+										{
+											BkGraph.put(fatherConcept, new TreeSet<Mapping>());
+											newConcepts.add(fatherConcept);
+										}
+										//Mapping child=new Mapping(childURI, ontoURI, 1.0,relation.getAbbreviation(),ontoURI);
+										Mapping father=new Mapping(fatherURI, ontoURI,1.0,relation.getAbbreviation(),ontoURI);
+										BkGraph.get(childConcept).add(father);
+									//	BkGraph.get(fatherConcept).add(child); 
+									}
+								}//endWhile	
+							}//endIF
+
+		      /* ********************** looking target classes *********************************** */
+							Query=Parameters.prefix+"SELECT ?c ?f  where {?c <"+org.apache.jena.vocabulary.RDFS.subClassOf+"> ?f} ";
+							Query=Query+ " VALUES ?f  {"+ontologyConcepts.get(ontoURI)+"}";
+							res = JenaMethods.ExecuteQuery(Query, ontology);
+							if(res!=null)
+							{
+								while(res.hasNext())
+								{
+									sol = res.next();
+									String childURI=sol.get("c").toString();
+									if(childURI.contains("http"))
+									{
+										String childConcept=ontoURI+Parameters.separator+childURI;
+										String fatherURI=sol.get("f").toString();
+										String fatherConcept=ontoURI+Parameters.separator+fatherURI;
+										if(!BkGraph.containsKey(childConcept))
+										{
+											BkGraph.put(childConcept, new TreeSet<Mapping>());
+											newConcepts.add(childConcept);
+										}
+										//Mapping child=new Mapping(childURI, ontoURI, 1.0,relation.getAbbreviation(),ontoURI);
+										Mapping father=new Mapping(fatherURI, ontoURI, 1.0,relation.getAbbreviation(),ontoURI);
+										BkGraph.get(childConcept).add(father);
+										//BkGraph.get(fatherConcept).add(child);
+									}
+								}	
+							}//endIF
+							ontology.close();						
+						}
+						
+					}
+						System.out.println("after "+BkGraph.size());
+				}
+			}
+	 }
+	 /* ***************************************************** */
+	 HashMap<String, String> localizeBKontologyPaths() throws MalformedURLException, URISyntaxException
+	 {
+		    
+			HashMap<String, String> ontologyPath=new HashMap<>();	
+			File BkOntologiesFolder =new File(Parameters.BKontologiesFolderPath);
+			for (String filePath : BkOntologiesFolder.list()) 
+			{
+				File file=new File(Parameters.BKontologiesFolderPath+File.separator+filePath);
+				String ontologyURI=JenaMethods.getOntologyUri(file.toURI().toURL());
+				ontologyPath.put(ontologyURI, file.getAbsolutePath());
+			}
+			return ontologyPath;
+	 }
+	 /* ***************categorize concepts per ontology ************* */
+	 HashMap<String, String> categorizeConcepts(TreeSet<String> newConcepts)
+	 {
 			HashMap<String, String> ontologyConcepts=new HashMap<>();
+			
 			String o,uri,values;
-			for (String oc : conceptList) 
+			
+			for (String oc : newConcepts) 
 			 {	 
 				 o=oc.substring(0,oc.indexOf(Parameters.separator));
 				 uri=oc.substring(oc.indexOf(Parameters.separator)+1);
@@ -293,92 +344,9 @@ public class BKbuilding {
 				 }
 				 ontologyConcepts.put(o,values);
 			  }	
-			
-			//localize ontology paths
-			HashMap<String, String> ontologyPath=new HashMap<>();	
-			File BkOntologiesFolder =new File(Parameters.BKontologiesFolderPath);
-			for (String filePath : BkOntologiesFolder.list()) 
-			{
-				File file=new File(Parameters.BKontologiesFolderPath+File.separator+filePath);
-				String ontologyURI=JenaMethods.getOntologyUri(file.toURI().toURL());
-				ontologyPath.put(ontologyURI, file.getAbsolutePath());
-			}
-			
-			
-			System.out.println("before "+BkGraph.size());
-			for (String ontoURI : ontologyPath.keySet()) {
-				String path=ontologyPath.get(ontoURI);
-			 	ontology=JenaMethods.LoadOntologyModelWithJena(path);
-			 	/* ********************** looking for fathers *********************************** */
-				String Query=Parameters.prefix+"SELECT ?c ?f  where {?c <"+org.apache.jena.vocabulary.RDFS.subClassOf+"> ?f} ";
-				if(ontologyConcepts.get(ontoURI)!=null){
-				Query=Query+ " VALUES ?c  {"+ontologyConcepts.get(ontoURI)+"}";
-				res = JenaMethods.ExecuteQuery(Query, ontology);
-				 if(res!=null)
-				 {
-					 while(res.hasNext())
-					 {
-						 sol = res.next();
-						 
-					     
-				    	 String fatherURI=sol.get("f").toString();
-				    	 if(fatherURI.contains("http"))
-				    	 {
-							 String fatherConcept=ontoURI+Parameters.separator+fatherURI;
-							 
-							 String childURI=sol.get("c").toString();
-						     String childConcept=ontoURI+Parameters.separator+childURI;
-								
-	                         
-	                         if(!BkGraph.containsKey(fatherConcept))
-	                         {BkGraph.put(fatherConcept, new TreeSet<Noeud>());}
-	                         
-	                         Noeud child=new Noeud(childURI, ontoURI, 0.2,"child");
-	                         Noeud father=new Noeud(fatherURI, ontoURI, 0.2,"father");
-	                          
-	                         BkGraph.get(childConcept).add(father);
-	                         BkGraph.get(fatherConcept).add(child); 
-				    	 }
-
-				 }	
-			}
-		      /* ********************** looking for children *********************************** */
-					Query=Parameters.prefix+"SELECT ?c ?f  where {?c <"+org.apache.jena.vocabulary.RDFS.subClassOf+"> ?f} ";
-					Query=Query+ " VALUES ?f  {"+ontologyConcepts.get(ontoURI)+"}";
-					res = JenaMethods.ExecuteQuery(Query, ontology);
-					
-					 if(res!=null)
-					 {
-						 while(res.hasNext())
-						 {
-							 sol = res.next();
-							 String childURI=sol.get("c").toString();
-							 if(childURI.contains("http")){
-						     String childConcept=ontoURI+Parameters.separator+childURI;
-						     
-					    	 String fatherURI=sol.get("f").toString();
-							 String fatherConcept=ontoURI+Parameters.separator+fatherURI;
-								                         
-	                         if(!BkGraph.containsKey(childConcept))
-	                         {BkGraph.put(childConcept, new TreeSet<Noeud>());}
-	                         
-	                         Noeud child=new Noeud(childURI, ontoURI, 0.2,"child");
-	                         Noeud father=new Noeud(fatherURI, ontoURI, 0.2,"father");
-	                          
-	                         BkGraph.get(childConcept).add(father);
-	                         BkGraph.get(fatherConcept).add(child);
-						 }
-					 }	
-				}
-				}
-						 
-	 ontology.close();
+			return ontologyConcepts;
 	 }
-						System.out.println("after "+BkGraph.size());
 
-	 }
-	
-	
 	/* ************************************************************************************************ */
 	void createOwlFile2() throws Exception
 	{
@@ -496,7 +464,7 @@ public class BKbuilding {
 	  void chargerBK_Mappings() throws IOException
 	{
 		long debut =System.currentTimeMillis();
-		String uri_source,ontologySource, uri_target,ontologyTarget,score;
+		String uri_source,ontologySource, uri_target,ontologyTarget,score,relation;
 		File f = new File(Parameters.ExistingMappingsPath); 
 		BufferedReader reader = new BufferedReader(new FileReader(f)); 
 		String line = null; 
@@ -509,23 +477,25 @@ public class BKbuilding {
 			ontologySource=lineParser.nextElement().toString();
 			uri_target=lineParser.nextElement().toString();
 			ontologyTarget=lineParser.nextElement().toString();
-			score =lineParser.nextElement().toString();		
-
-			Noeud map=new Noeud(uri_target,ontologyTarget, Double.parseDouble(score));
+			score =lineParser.nextElement().toString();	
+			relation =lineParser.nextElement().toString();
+			String source=lineParser.nextElement().toString();
+			Mapping map=new Mapping(uri_target,ontologyTarget, Double.parseDouble(score),relation,source);
 			
-			if(globalGraph.containsKey(ontologySource+Parameters.separator+uri_source))globalGraph.get(ontologySource+Parameters.separator+uri_source).add(map);
+			if(globalGraph.containsKey(ontologySource+Parameters.separator+uri_source))
+				globalGraph.get(ontologySource+Parameters.separator+uri_source).add(map);
 			else
 			{
-				TreeSet<Noeud> liste=new TreeSet<>();
+				TreeSet<Mapping> liste=new TreeSet<>();
 				liste.add(map);
 				globalGraph.put(ontologySource+Parameters.separator+uri_source,liste);
 			}
 			 
-			map= new Noeud(uri_source,ontologySource, Double.parseDouble(score));
+			map= new Mapping(uri_source,ontologySource, Double.parseDouble(score),relation,source);
 			if(globalGraph.containsKey(ontologyTarget+Parameters.separator+uri_target))globalGraph.get(ontologyTarget+Parameters.separator+uri_target).add(map);
 			else
 			{
-				TreeSet<Noeud> liste=new TreeSet<>();
+				TreeSet<Mapping> liste=new TreeSet<>();
 				liste.add(map);
 				globalGraph.put(ontologyTarget+Parameters.separator+uri_target,liste);
 			}
@@ -550,7 +520,6 @@ public class BKbuilding {
 			if(a.contains(".rdf"))
 			{
 				TreeSet<String> mappingsA = Fichier.loadOAEIAlignment(Parameters.BkAlignmentsFolderPath+a);
-				System.out.println(a+" size "+mappingsA.size());
 				mappings.addAll(Fichier.loadOAEIAlignment(Parameters.BkAlignmentsFolderPath+a));
 			}
 		}
@@ -563,28 +532,27 @@ public class BKbuilding {
 			uri_target=lineParser.nextElement().toString();
 			ontologyTarget=lineParser.nextElement().toString();
 			score =lineParser.nextElement().toString();			
-			Noeud map=new Noeud(uri_target,ontologyTarget, Double.parseDouble(score));
+			Mapping map=new Mapping(uri_target,ontologyTarget, Double.parseDouble(score),"=",Parameters.matcherName);
 			if(globalGraph.containsKey(ontologySource+Parameters.separator+uri_source))
 				{
 				globalGraph.get(ontologySource+Parameters.separator+uri_source).add(map);
 				}
 			else
 			{
-				TreeSet<Noeud> liste=new TreeSet<>();
+				TreeSet<Mapping> liste=new TreeSet<>();
 				liste.add(map);
 				globalGraph.put(ontologySource+Parameters.separator+uri_source,liste);
 			}
 			 
-			map= new Noeud(uri_source,ontologySource, Double.parseDouble(score));
+			map= new Mapping(uri_source,ontologySource, Double.parseDouble(score),"=",Parameters.matcherName);
 			if(globalGraph.containsKey(ontologyTarget+Parameters.separator+uri_target))globalGraph.get(ontologyTarget+Parameters.separator+uri_target).add(map);
 			else
 			{
-				TreeSet<Noeud> liste=new TreeSet<>();
+				TreeSet<Mapping> liste=new TreeSet<>();
 				liste.add(map);
 				globalGraph.put(ontologyTarget+Parameters.separator+uri_target,liste);
 			}
 		}
-		System.out.println("[chargerBKMappingsFromFolder] globalGraph: "+globalGraph.size());
 	}
 	/**
 	 * This function matches the source ontology to the BK ontologies

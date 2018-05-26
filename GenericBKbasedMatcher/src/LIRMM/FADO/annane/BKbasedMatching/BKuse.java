@@ -27,14 +27,14 @@ public class BKuse {
 
 	URL source=Parameters.sourceOntology;
 	URL target=Parameters.targetOntology;
-	public static String  targetAcronym, sourceAcronym;
+	public static String  targetOntologyAcronym, sourceOntologyAcronym;
 	String sourceIRI, targetIRI;
 	TreeSet<String> sourceUris;
 	TreeSet<String> matchedSourceUris=new TreeSet<>();
 	TreeSet<String> targetUris;
 	boolean needInterface=false;
-	Map<String, TreeSet<Noeud>> BkGraph;
-	ArrayList<ArrayList<Noeud>> paths=new ArrayList<ArrayList<Noeud>>();
+	Map<String, TreeSet<Mapping>> BkGraph;
+	ArrayList<ArrayList<Mapping>> paths=new ArrayList<ArrayList<Mapping>>();
 	Map<String,String> BkOntologiesCodes;
 	public static HashMap<String, String> targetElements ;
 	
@@ -87,13 +87,13 @@ public class BKuse {
 			{
 				if(!targetIRI.equals("http://mouse.owl")&&!targetIRI.equals("http://human.owl"))
 					{needInterface=true;}
-				targetAcronym=BKbuilding.ontologyAcronym.get(targetIRI);
+				targetOntologyAcronym=BKbuilding.ontologyAcronym.get(targetIRI);
 				BKbuilding.codeInterface.clear();
-				BKbuilding.loadConcepts("C:\\Users\\annane\\Desktop\\concepts\\concepts\\",targetAcronym);
+				BKbuilding.loadConcepts("C:\\Users\\annane\\Desktop\\concepts\\concepts\\",targetOntologyAcronym);
 			}
-			else targetAcronym=BKbuilding.getAcronym(targetIRI);			
+			else targetOntologyAcronym=BKbuilding.getAcronym(targetIRI);			
 			targetUris=new TreeSet<>();
-            targetElements = BKbuilding.loadOntologyElementsForSelection(oc, targetAcronym, needInterface);
+            targetElements = BKbuilding.loadOntologyElementsForSelection(oc, targetOntologyAcronym, needInterface);
             targetUris.addAll(targetElements.keySet());
 
 			oc.close();
@@ -133,8 +133,8 @@ public class BKuse {
 	{
 		if(sourceAcronym!=null && targetAcronym !=null)
 		{
-			this.sourceAcronym=sourceAcronym;
-			this.targetAcronym=targetAcronym;
+			this.sourceOntologyAcronym=sourceAcronym;
+			this.targetOntologyAcronym=targetAcronym;
 			//  SourceIRIS	
 			sourceUris=URIs;
 		    //  Charger ontology cible 
@@ -147,7 +147,7 @@ public class BKuse {
 	}
 //___________________________________________________________________________________________
 	
-	public  void BKexploitation(Map<String, TreeSet<Noeud>> builtBK) throws Exception
+	public  void BKexploitation(Map<String, TreeSet<Mapping>> builtBK) throws Exception
 	{
 		BkGraph=builtBK;
 		Matching matching;
@@ -169,7 +169,7 @@ public class BKuse {
 		chargerBKMappingsFromBuiltBK(BkOntologiesCodes);
 		
 		if(Parameters.derivationStrategy==Parameters.derivationStrategies.specific_algo)
-			derivationFunction();
+			derivationFunction(Parameters.derivedCheminsPath);
 		else if(Parameters.derivationStrategy==Parameters.derivationStrategies.neo4j)
 		{
 			TreeSet<String> automatic_mappings=new TreeSet<>();
@@ -179,7 +179,7 @@ public class BKuse {
 				lineParser = new StringTokenizer(m, Parameters.separator); 
 				String os=lineParser.nextToken();
 				String cs=lineParser.nextToken();
-				for (Noeud n : BkGraph.get(m)) 
+				for (Mapping n : BkGraph.get(m)) 
 				{
 				    String m1=cs+','+os+','+n.code+','+n.ontology+','+n.score;
 					String m2=n.code+','+n.ontology+','+cs+','+os+','+n.score;
@@ -201,12 +201,9 @@ public class BKuse {
 			}
 			Fichier.deleteFile(Parameters.BK_automatic_mappings_path);
 			Fichier.deleteFile(Parameters.BK_manual_mappings_path);
-			Fichier.deleteFile(Parameters.BK_target_classes_path);
-			Fichier.deleteFile(Parameters.BK_target_by_classes_path);
 			Fichier f=new Fichier("");
 			f.ecrire(Parameters.BK_automatic_mappings_path, "id1,o1,id2,o2,a"+Fichier.retourAlaLigne+Fichier.treeToString(automatic_mappings));
 			File hh=new File(Parameters.BK_automatic_mappings_path);
-			if(hh.exists())System.out.println(hh.getAbsolutePath());
 			f.ecrire(Parameters.BK_manual_mappings_path, "id1,o1,id2,o2"+Fichier.retourAlaLigne+Fichier.treeToString(manual_mappings));
 			BkGraph.clear();
 
@@ -216,99 +213,47 @@ public class BKuse {
 			//Delete the old derivation result file
 	        fichier.path=Parameters.derivationResultFolderPath;
 			fichier.deleteFile();
-			Neo4Jderivation();
-			if(Parameters.BKselectionInternalExploration)
-			{
-				//les concepts non matcheé
-				TreeSet<String> notMatchedConcepts=new TreeSet<>();
-
-			    for (String uri : sourceUris) {
-					if(!matchedSourceUris.contains(uri))
-						notMatchedConcepts.add(uri);
-				}
-
-				if(notMatchedConcepts.size()>0)
-				{
-					Matching m=new Matching(source, target);
-					m.BkBasedMatching(notMatchedConcepts);
-				}
-				else
-				{
-					System.out.println("Pas de enriched");
-				}	
-			}			
+			Neo4Jderivation(false, Parameters.derivedCheminsPath);		
 		}
 		else
 			throw new NullPointerException("Please, specify the derivation strategy parameter.");
-
-	}
-	
-	
-	
-	
-	public  void BKexploitation(Map<String, TreeSet<Noeud>> builtBK, boolean ElcioMappings) throws Exception
-	{
-		BkGraph=builtBK;
-		Matching matching;
-		long debut =System.currentTimeMillis();
-		//supprimer ce qui a etait dans le dossier
-		Fichier fichier=new Fichier(Parameters.directAlignmentFolderPath);
-		fichier.deleteFile();
-
-		long debut2 =System.currentTimeMillis();
-		
-		TreeSet<String> t1=new TreeSet<>();
-
-		StringTokenizer lineParser;
-		for ( String m:BkGraph.keySet()) {
-			lineParser = new StringTokenizer(m, Parameters.separator); 
-			String os=lineParser.nextToken();
-			String cs=lineParser.nextToken();
-			for (Noeud n : BkGraph.get(m)) 
+		//BKselectionWithInternalExploration for the concepts that have not been matched
+		if(Parameters.BKselectionInternalExploration)
+		{
+			//les concepts non matcheé
+			TreeSet<String> notMatchedConcepts=new TreeSet<>();
+            notMatchedConcepts=(TreeSet<String>) sourceUris.clone();
+            notMatchedConcepts.removeAll(matchedSourceUris);
+            if(matchedSourceUris.size()==0)throw new Exception("matchedSourceUris is zero size!");
+			System.out.println("number of matched source concepts: "+matchedSourceUris.size());
+            
+			if(notMatchedConcepts.size()>0)
 			{
-	            
-			    String m1=cs+','+os+','+n.code+','+n.ontology+','+n.score;
-				String m2=n.code+','+n.ontology+','+cs+','+os+','+n.score;
-				if(n.score<2)
-				{
-					
-					if(!t1.contains(m1) && !t1.contains(m2))
-					{
-				
-						t1.add(m1);
-
-					}
-					
-				}
-			
+				Matching m=new Matching(source, target);
+				m.BkBasedMatching(notMatchedConcepts);
 			}
+			else
+			{
+				System.out.println("All source concepts have been matched! no internal exploration");
+			}	
 		}
-		Fichier.deleteFile(Parameters.BkFolderPath+"mappings.csv");
 
-		Fichier f=new Fichier("");
-		f.ecrire(Parameters.BkFolderPath+"mappings.csv", "id1,o1,id2,o2,a"+Fichier.retourAlaLigne+Fichier.treeToString(t1));
-
-		BkGraph.clear();
-
-		//supprimer ce qui �tait dans le dossier
-        fichier.path=Parameters.derivationResultFolderPath;
-		fichier.deleteFile();
-		
-		loadMappingsToNeo4J(Parameters.BkFolderPath);
-		
-		if(Parameters.derivationStrategy==Parameters.derivationStrategies.neo4j)
-		 Neo4Jderivation();
-		else derivationFunction();
 	}
+	
 	/**
 	 * 
 	 */
-	public  void BKuseWithEnrichment(Map<String, TreeSet<Noeud>> builtBK) throws Exception
+	public  void BKuseWithEnrichment(Map<String, TreeSet<Mapping>> builtBK) throws Exception
 	{
+		ArrayList<String> relations=new ArrayList<>();
+		for (Relation r : Parameters.BKselectionExplorationRelations) 
+		{
+			relations.add(r.getAbbreviation());
+		}
 		System.out.println("********************************Matching with enrichment***************************");
 		BkGraph=builtBK;
 		Matching matching;
-		long debut =System.currentTimeMillis();
+		
 		//supprimer ce qui a etait dans le dossier
 		Fichier fichier=new Fichier(Parameters.directAlignmentFolderPath);
 		fichier.deleteFile();
@@ -322,73 +267,55 @@ public class BKuse {
 		/* *********************************************************************** */
 		TreeSet<String> t1=new TreeSet<>();
 		TreeSet<String> t2=new TreeSet<>();
-		TreeSet<String> superClass=new TreeSet<>();
 		TreeSet<String> subClass=new TreeSet<>();
 		StringTokenizer lineParser;
 		for ( String m:BkGraph.keySet()) {
 			lineParser = new StringTokenizer(m, Parameters.separator); 
 			String os=lineParser.nextToken();
 			String cs=lineParser.nextToken();
-			for (Noeud n : BkGraph.get(m)) 
+			for (Mapping n : BkGraph.get(m)) 
 			{
-			    String m1=cs+','+os+','+n.code+','+n.ontology+','+n.score;
-				String m2=n.code+','+n.ontology+','+cs+','+os+','+n.score;
-				if(n.score<2)
+			    String m1=cs+','+os+','+n.code+','+n.ontology+','+n.score+','+n.relation;
+				String m2=n.code+','+n.ontology+','+cs+','+os+','+n.score+','+n.relation;
+				if(n.score==2.0)
+				{	
+					t2.add(m1);
+					t2.add(m2);
+				}
+				else if(n.relation.equals("="))
 				{
-					
-				//	if(!t1.contains(m1) && !t1.contains(m2)&&!superClass.contains(m1)&&!subClass.contains(m1))
-					{
-						if(n.type.equals(""))
-						{t1.add(m1);t1.add(m2);}
-						else
-						{
-							if(n.type.equals("child"))
-							{
-								subClass.add(m1);
-							}
-							else
-							{
-								superClass.add(m1);
-							}
-						}
-					}
-					
+					t1.add(m1);
+					t1.add(m2);	
 				}
 				else
 				{
-					//if(!t2.contains(m1) && !t2.contains(m2))
-					{
-						t2.add(m1);
-						t2.add(m2);
-					}
-				}
+					subClass.add(m1);
+				}			
 			}
 		}
-		Fichier.deleteFile(Parameters.BkFolderPath+"mappings.csv");
-		Fichier.deleteFile(Parameters.BkFolderPath+"obo.csv");
-		Fichier.deleteFile(Parameters.BkFolderPath+"subclass.csv");
-		Fichier.deleteFile(Parameters.BkFolderPath+"superclass.csv");
-		Fichier f=new Fichier("");
-		f.ecrire(Parameters.BkFolderPath+"mappings.csv", "id1,o1,id2,o2,a"+Fichier.retourAlaLigne+Fichier.treeToString(t1));
-		f.ecrire(Parameters.BkFolderPath+"obo.csv", "id1,o1,id2,o2"+Fichier.retourAlaLigne+Fichier.treeToString(t2));
-		f.ecrire(Parameters.BkFolderPath+"subclass.csv", "id1,o1,id2,o2,a"+Fichier.retourAlaLigne+Fichier.treeToString(subClass));
-		f.ecrire(Parameters.BkFolderPath+"superclass.csv", "id1,o1,id2,o2"+Fichier.retourAlaLigne+Fichier.treeToString(superClass));
-		BkGraph.clear();
-		/* *************************************************************** */	
-		Parameters.derivedCheminsPath=Parameters.derivationResultFolderPath+"cheminEnriched.csv";
-		f=new Fichier(Parameters.derivedCheminsPath);
+		
+		String derivationPathForEnrichedBK=Parameters.derivationResultFolderPath+"cheminEnriched.csv";
+		Fichier f=new Fichier(derivationPathForEnrichedBK);
 		f.deleteFile();
-		
-		
 		if(Parameters.derivationStrategy==Parameters.derivationStrategies.neo4j)
 		{
+			Fichier.deleteFile(Parameters.BK_automatic_mappings_path);
+			Fichier.deleteFile(Parameters.BK_manual_mappings_path);
+			Fichier.deleteFile(Parameters.BK_target_classes_path);
+			//Fichier.deleteFile(Parameters.BkFolderPath+"superclass.csv");
+			f.ecrire(Parameters.BK_automatic_mappings_path, "id1,o1,id2,o2,a,relation"+Fichier.retourAlaLigne+Fichier.treeToString(t1));
+			f.ecrire(Parameters.BK_manual_mappings_path, "id1,o1,id2,o2,a,relation"+Fichier.retourAlaLigne+Fichier.treeToString(t2));
+			f.ecrire(Parameters.BK_target_classes_path, "id1,o1,id2,o2,a,relation"+Fichier.retourAlaLigne+Fichier.treeToString(subClass));
+			//f.ecrire(Parameters.BkFolderPath+"superclass.csv", "id1,o1,id2,o2"+Fichier.retourAlaLigne+Fichier.treeToString(superClass));
+			BkGraph.clear();
 			loadMappingsToNeo4J(Parameters.BkFolderPath);
-			Neo4Jderivation();
+			Neo4Jderivation(true,derivationPathForEnrichedBK);
 		}
 		else 
-			derivationFunction();
-	}
-	//*******************************************************************************************	
+		{
+			derivationFunction(derivationPathForEnrichedBK);
+		}
+	}	
 	/*
 	 * ********************************* loadMappingsToNeo4J
 	 */
@@ -401,9 +328,7 @@ public class BKuse {
 		query="MATCH (n:concept) delete n";
 		Parameters.session.run(query);
 		
-		//charger mappings extracted by YAM++
-		
-
+		//charger mappings extracted by the automatic matcher
 		String destFolder=Parameters.neo4j_import_folder;
 		Fichier.deleteFile(destFolder+"automatic_mappings.csv");
 		Fichier.deleteFile(destFolder+"manualMappings.csv");
@@ -433,31 +358,32 @@ public class BKuse {
          "AS line "+
          "merge (concept1:concept { id:line.id1,ontology:line.o1 }) "+
          "merge (concept2:concept { id:line.id2,ontology:line.o2 }) "+
-         "CREATE (concept1)-[:obo]->(concept2);";
+         "CREATE (concept1)-[:obo{type:line.relation}]->(concept2);";
 	Parameters.session.run(query);
 	
-	File f=new File(Parameters.BK_target_classes_path);
-	if(f.exists())
-	{sourceFile=new File(Parameters.BK_target_classes_path);
-	destFile=new File(destFolder+"subclass.csv");
-    org.apache.commons.io.FileUtils.copyFile(sourceFile, destFile);
-	
-	query="USING PERIODIC COMMIT 10000 "+
-			 "LOAD CSV WITH HEADERS "+
-			 "FROM \"file:///subclass.csv\" "+
-			 "AS line "+
-			 "merge (concept1:concept { id:line.id1,ontology:line.o1 }) "+
-			 "merge (concept2:concept { id:line.id2,ontology:line.o2 }) "+
-			 "CREATE (concept1)-[:isA{a:toFloat(line.a),b:toFloat(line.b),c:toInt(line.c),d:line.d}]->(concept2);";
-    Parameters.session.run(query);}
-	
-
+	if(Parameters.BKselectionInternalExploration)
+	{
+		File f=new File(Parameters.BK_target_classes_path);
+		if(f.exists())
+		{
+			sourceFile=new File(Parameters.BK_target_classes_path);
+			destFile=new File(destFolder+"subclass.csv");
+			org.apache.commons.io.FileUtils.copyFile(sourceFile, destFile);
+			query="USING PERIODIC COMMIT 10000 "+
+				 "LOAD CSV WITH HEADERS "+
+				 "FROM \"file:///subclass.csv\" "+
+				 "AS line "+
+				 "merge (concept1:concept { id:line.id1,ontology:line.o1 }) "+
+				 "merge (concept2:concept { id:line.id2,ontology:line.o2 }) "+
+				 "CREATE (concept1)-[:internal{a:toFloat(line.a),type:line.relation,b:toFloat(line.b),c:toInt(line.c),d:line.d}]->(concept2);";
+			Parameters.session.run(query);
+		}
 	}
-	
+}
 	/*
 	 * *****************************Derivation with Neo4J
 	 */ 
-	   public  void Neo4Jderivation() throws Exception
+	   public  void Neo4Jderivation(Boolean directedDerivation, String derivationPath) throws Exception
 	   {
 		 String path;
 		 	   	
@@ -467,12 +393,18 @@ public class BKuse {
 		   String id=uriS;
 		   String ontology=sourceIRI;
 
-		   String	query="MATCH p=(n:concept{ontology:'"+ontology+"',id:'"+id+"'})-"
-	   			+ "[r*1.."+Parameters.derivationMaxPathLength+"]-(m:concept{ontology:'"+targetIRI+"'})"+
+		   String	query;
+		   if(directedDerivation)
+			   query="MATCH p=(n:concept{ontology:'"+ontology+"',id:'"+id+"'})-"
+	   			+ "[r*1.."+Parameters.derivationMaxPathLength+"]->(m:concept{ontology:'"+targetIRI+"'})"+
 	   			"RETURN distinct m.id as target, p";
+		   else
+			   query="MATCH p=(n:concept{ontology:'"+ontology+"',id:'"+id+"'})-"
+			   			+ "[r*1.."+Parameters.derivationMaxPathLength+"]-(m:concept{ontology:'"+targetIRI+"'})"+
+			   			"RETURN distinct m.id as target, p";
+			   
 	   		StatementResult result= null;
 	   		result=Parameters.session.run(query);
-
 	   		if(result!=null && result.hasNext())
 	   		{
 	   			while(result.hasNext())
@@ -487,17 +419,17 @@ public class BKuse {
 	   					this.matchedSourceUris.add(uriS);
 	   					nodes=new ArrayList<>();
 	   				    scores=new ArrayList<>();
-	   					for (Node noeud : p.nodes()) 
+	   					for (Node Mapping : p.nodes()) 
 	   					{
-	   						//System.out.println(noeud.get("id").asString()+"#"+noeud.get("ontology").asString());
-							nodes.add(noeud.get("id").asString()+Parameters.separator+noeud.get("ontology").asString());
+	   						//System.out.println(Mapping.get("id").asString()+"#"+Mapping.get("ontology").asString());
+							nodes.add(Mapping.get("id").asString()+Parameters.separator+Mapping.get("ontology").asString());
 						}
 		   				//System.out.println(nodes.size()+" nodes");
 	   					scores.add(null);
 	   					for (Relationship r : p.relationships()) 
 	   					{
 							if(r.hasType("obo"))scores.add(2.0);
-							else if(r.hasType("isA"))scores.add(3.0);
+							else if(r.hasType("internal"))scores.add(3.0);
 							else scores.add(r.get("a").asDouble());
 						}
 	   					path="$$";
@@ -509,7 +441,7 @@ public class BKuse {
 	   					//System.out.println(path);
 
 	   					Fichier f=new Fichier("");
-	   					f.ecrire(Parameters.derivedCheminsPath, id+','+uriTarget+','+nodes.size()+','+path+','+Fichier.retourAlaLigne);
+	   					f.ecrire(derivationPath, id+','+uriTarget+','+nodes.size()+','+path+','+Fichier.retourAlaLigne);
 	   			    }
 	   				
 	   		}//end while	   		
@@ -520,7 +452,7 @@ public class BKuse {
 	/*
 	 * *****************************Derivation with Neo4J
 	 */ 
-	   public  void Neo4Jderivation(String referencePath) throws Exception
+	   public  void Neo4Jderivation(String derivationPath,String referencePath) throws Exception
 	   {
 		 long debut=System.currentTimeMillis();
 		 String codeCible;
@@ -539,7 +471,7 @@ public class BKuse {
 		   String ontology=uriS.substring(0,uriS.indexOf(Parameters.separator));
 
 		   String	query="MATCH p=(n:concept{ontology:'"+ontology+"',id:'"+id+"'})-"
-	   			+ "[r*1.."+Parameters.derivationMaxPathLength+"]-(m:concept{ontology:'"+targetAcronym+"'})"+
+	   			+ "[r*1.."+Parameters.derivationMaxPathLength+"]-(m:concept{ontology:'"+targetOntologyAcronym+"'})"+
 	   			"RETURN distinct m.id as target, p";
 	   	//	System.out.println(query);
 
@@ -555,21 +487,21 @@ public class BKuse {
 	   				ArrayList<String> nodes=null;
 	   				ArrayList<Double> scores=null;
 	   				String uriTarget=record.get("target").asString();
-	   				if(targetUris.contains(targetAcronym+Parameters.separator+uriTarget))
+	   				if(targetUris.contains(targetOntologyAcronym+Parameters.separator+uriTarget))
 	   				{ 	
 
 	   					this.matchedSourceUris.add(uriS);
 	   					nodes=new ArrayList<>();
 	   				    scores=new ArrayList<>();
-	   					for (Node noeud : p.nodes()) {
-	   						//System.out.println(noeud.get("id").asString()+"#"+noeud.get("ontology").asString());
-							nodes.add(noeud.get("id").asString()+Parameters.separator+noeud.get("ontology").asString());
+	   					for (Node Mapping : p.nodes()) {
+	   						//System.out.println(Mapping.get("id").asString()+"#"+Mapping.get("ontology").asString());
+							nodes.add(Mapping.get("id").asString()+Parameters.separator+Mapping.get("ontology").asString());
 						}
 		   				//System.out.println(nodes.size()+" nodes");
 	   					scores.add(null);
 	   					for (Relationship r : p.relationships()) {
 							if(r.hasType("obo"))scores.add(2.0);
-							else if(r.hasType("isA"))scores.add(3.0);
+							else if(r.hasType("internal"))scores.add(3.0);
 							else scores.add(r.get("a").asDouble());
 						}
 	   					path="$$";
@@ -583,7 +515,7 @@ public class BKuse {
 	   					else if(refNeutre.contains(id+','+uriTarget)||refNeutre.contains(uriTarget+','+id))res="neutre";
 	   					else res="false";
 	   					Fichier f=new Fichier("");
-	   					f.ecrire(Parameters.derivedCheminsPath, id+','+uriTarget+','+nodes.size()+','+path+','+res+Fichier.retourAlaLigne);
+	   					f.ecrire(derivationPath, id+','+uriTarget+','+nodes.size()+','+path+','+res+Fichier.retourAlaLigne);
 	   			    }
 	   				
 	   		}//end while	   		
@@ -634,29 +566,27 @@ public class BKuse {
 	    
 		for (String line : mappings) 	
 		{
-			
 			StringTokenizer lineParser = new StringTokenizer(line, ","); 
 			uri_source=lineParser.nextElement().toString();
 			ontologySource=lineParser.nextElement().toString();
 			uri_target=lineParser.nextElement().toString();
 			ontologyTarget=lineParser.nextElement().toString();
-			score =lineParser.nextElement().toString();
-					
-			Noeud map=new Noeud(uri_target,ontologyTarget, Double.parseDouble(score));
+			score =lineParser.nextElement().toString();		
+			Mapping map=new Mapping(uri_target,ontologyTarget, Double.parseDouble(score),"=",Parameters.matcherName);
 			//System.out.println(uri_source+ontologySource);
 			if(BkGraph.containsKey(ontologySource+Parameters.separator+uri_source))BkGraph.get(ontologySource+Parameters.separator+uri_source).add(map);
 			else
 			{
-				TreeSet<Noeud> liste=new TreeSet<>();
+				TreeSet<Mapping> liste=new TreeSet<>();
 				liste.add(map);
 				BkGraph.put(ontologySource+Parameters.separator+uri_source,liste);
 			}
 			 
-			map= new Noeud(uri_source,ontologySource, Double.parseDouble(score));
+			map= new Mapping(uri_source,ontologySource, Double.parseDouble(score),"=",Parameters.matcherName);
 			if(BkGraph.containsKey(ontologyTarget+Parameters.separator+uri_target))BkGraph.get(ontologyTarget+Parameters.separator+uri_target).add(map);
 			else
 			{
-				TreeSet<Noeud> liste=new TreeSet<>();
+				TreeSet<Mapping> liste=new TreeSet<>();
 				liste.add(map);
 				BkGraph.put(ontologyTarget+Parameters.separator+uri_target,liste);
 			}
@@ -666,143 +596,64 @@ public class BKuse {
 	
 	
 	//*******************************************derivationFunction*******************************************
-	public  void derivationFunction(boolean MappingElcio) throws Exception
+	public  void derivationFunction(String derivationPtah) throws Exception
 	{
-		System.out.println("I start derivation with obo mappings");
-		long debut =System.currentTimeMillis();
+		System.out.println("Derivation started");
 		Fichier fichier=new Fichier(Parameters.derivationResultFolderPath);
 		fichier.deleteFile();
 		ArrayList<String> treatedConcepts=new ArrayList<String>();
-		ArrayList<Noeud> liste;
-		ArrayList<Noeud> listePrime;
-		ArrayList<ArrayList<Noeud>> myGraph=new ArrayList<ArrayList<Noeud>>();
+		ArrayList<Mapping> liste;
+		ArrayList<Mapping> listePrime;
+		ArrayList<ArrayList<Mapping>> myGraph=new ArrayList<ArrayList<Mapping>>();
 		
 
-	//  la grande boucle 
-	//				Fichier f=new Fichier("bkGraph.txt");
-		//			f.ecrire(BkGraph.toString());
-		for (String ontologyCode : sourceUris) 
-						{
-							myGraph.clear();
-							treatedConcepts.clear();
-							paths.clear();
-							
-							StringTokenizer kk=new StringTokenizer(ontologyCode,Parameters.separator);
-							String ontology=kk.nextToken();
-							String uri=kk.nextToken();
-							
-							Noeud c=new Noeud(uri,ontology, "");
-							//System.out.println(uri+' '+acroS);
-							ArrayList<Noeud> l=new ArrayList<Noeud>();
-							l.add(c);
-							myGraph.add(l);
-							boolean stop =false;
-							int cpt=0;
-							while (myGraph.size()>0  && cpt<100 && !stop) {
-								liste=myGraph.get(0);
-								myGraph.remove(0);
-								c=liste.get(liste.size()-1);
-								if(!treatedConcepts.contains(c.code+c.ontology))
-								{
-									treatedConcepts.add(c.code+c.ontology);
-									TreeSet<Noeud> s = BkGraph.get(c.ontology+Parameters.separator+c.code);
-									
-									if(s!=null)
-									{
-										for (Noeud targetNode : s) 
-									    {
-										
-											if(!sourceUris.contains(targetNode.ontology+Parameters.separator+targetNode.code))
-											{
-
-												listePrime=(ArrayList<Noeud>) liste.clone();
-												listePrime.add(targetNode);
-												if(targetUris.contains(targetNode.ontology+Parameters.separator+targetNode.code))
-												{
-													System.out.println("I found another one!");
-													paths.add(listePrime);
-													stop=true;
-												}
-												else 
-												{
-													cpt++;
-													myGraph.add(listePrime);
-												}
-											 }
-									    }//end for
-									}	
-								}	
-							}//endwhile
-							if(paths.size()>0)writePaths();
-						}
-	}
-	
-	//*******************************************derivationFunction*******************************************
-	public  void derivationFunction() throws Exception
-	{
-		System.out.println("I start derivation");
-		long debut =System.currentTimeMillis();
-		Fichier fichier=new Fichier(Parameters.derivationResultFolderPath);
-		fichier.deleteFile();
-		ArrayList<String> treatedConcepts=new ArrayList<String>();
-		ArrayList<Noeud> liste;
-		ArrayList<Noeud> listePrime;
-		ArrayList<ArrayList<Noeud>> myGraph=new ArrayList<ArrayList<Noeud>>();
-		
-
-	//  la grande boucle 
-	//				Fichier f=new Fichier("bkGraph.txt");
-		//			f.ecrire(BkGraph.toString());
+	//  Searching for each source concept its target concepts
 		for (String uri : sourceUris) 
+		{
+			myGraph.clear();
+			treatedConcepts.clear();
+			paths.clear();
+			Mapping c=new Mapping(uri,sourceIRI,null,null,null);
+			ArrayList<Mapping> l=new ArrayList<Mapping>();
+			l.add(c);
+			myGraph.add(l);
+			while (myGraph.size()>0) 
+			{
+				liste=myGraph.get(0);
+				myGraph.remove(0);
+				c=liste.get(liste.size()-1);
+				if(!treatedConcepts.contains(c.code+c.ontology))
+				{
+					treatedConcepts.add(c.code+c.ontology);
+					TreeSet<Mapping> s = BkGraph.get(c.ontology+Parameters.separator+c.code);
+					if(s!=null)
+					{
+						for (Mapping targetNode : s) 
 						{
-							myGraph.clear();
-							treatedConcepts.clear();
-							paths.clear();
-							
-							Noeud c=new Noeud(uri,sourceIRI, "");
-							//System.out.println(uri+' '+acroS);
-							ArrayList<Noeud> l=new ArrayList<Noeud>();
-							l.add(c);
-							myGraph.add(l);
-							while (myGraph.size()>0) {
-								liste=myGraph.get(0);
-								myGraph.remove(0);
-								c=liste.get(liste.size()-1);
-								if(!treatedConcepts.contains(c.code+c.ontology))
+							if(!sourceUris.contains(targetNode.code))
+							{
+								listePrime= (ArrayList<Mapping>) liste.clone();
+								listePrime.add(targetNode);
+								if(targetUris.contains(targetNode.code))
 								{
-									treatedConcepts.add(c.code+c.ontology);
-									TreeSet<Noeud> s = BkGraph.get(c.ontology+Parameters.separator+c.code);
-									
-									if(s!=null)
-									{
-										for (Noeud targetNode : s) 
-									    {
-										
-											if(!sourceUris.contains(targetNode.code))
-											{
-												listePrime=(ArrayList<Noeud>) liste.clone();
-												listePrime.add(targetNode);
-												if(targetUris.contains(targetNode.code))
-												{
-													paths.add(listePrime);
-												}
-												else 
-												{
-													myGraph.add(listePrime);
-												}
-											 }
-									    }//end for
-									}	
-								}	
-							}//endwhile
-							if(paths.size()>0)writePaths();
-						}
-
+									paths.add(listePrime);
+				   					this.matchedSourceUris.add(uri);
+								}
+								else if(listePrime.size()<=Parameters.derivationMaxPathLength)
+								{
+									myGraph.add(listePrime);
+								}
+							}
+						 }//end for
+					  }	
+				  }	
+			  }//endwhile
+			  if(paths.size()>0)writePaths(derivationPtah);
+			}
 	}
-	
 	
 	//***************************************   WritePaths
-	public  void writePaths()
+	public  void writePaths(String filePath)
 	{
 		String allPaths="";
 		String path = "";
@@ -811,24 +662,21 @@ public class BKuse {
 		String conceptsPath="";
 		int conceptsNumber;
 	
-		for (ArrayList<Noeud> p : paths) 
+		for (ArrayList<Mapping> p : paths) 
 		{
 			conceptsPath="";
 			conceptsNumber=p.size();
-			for (Noeud noeud : p)
+			for (Mapping Mapping : p)
 			{
-				//sourcesPath=sourcesPath+noeud.source;
-				conceptsPath=conceptsPath+"$$"+noeud.score+Parameters.separator+noeud.code+Parameters.separator+noeud.ontology;
+				//sourcesPath=sourcesPath+Mapping.source;
+				conceptsPath=conceptsPath+"$$"+Mapping.score+Parameters.separator+Mapping.code+Parameters.separator+Mapping.ontology;
 			}
-			//System.out.println(CN+","+CM);
-			String res="false";
 			CN=p.get(0).code;
 			CM=p.get(p.size()-1).code;
 			path=CN+","+CM+","+conceptsNumber+","+conceptsPath+","+"\r\n";
-			//System.out.println(path);
 			allPaths=allPaths+path;
 		}
-		Fichier fichier=new Fichier(Parameters.derivedCheminsPath);
+		Fichier fichier=new Fichier(filePath);
 		fichier.ecrire(allPaths);
 	}
 	

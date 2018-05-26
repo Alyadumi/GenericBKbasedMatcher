@@ -54,7 +54,7 @@ public class Matching {
 	{
 		BKbuilding buildBK=new BKbuilding();
 		buildBK.sourceIRI=sourceOntologyURI;
-		Map<String, TreeSet<Noeud>> builtBk = buildBK.BuildEnrichedBK(URIs);		
+		Map<String, TreeSet<Mapping>> builtBk = buildBK.BuildEnrichedBK(URIs);		
 		BKuse useBK=new BKuse(Parameters.sourceOntology, Parameters.targetOntology,URIs);
 		useBK.sourceIRI=sourceOntologyURI;
 		useBK.targetIRI=targetOntologyURI;
@@ -66,7 +66,7 @@ public class Matching {
 	
 
 	/**
-	 * This function implement the whole BK based matching
+	 * This function implements the whole BK based matching
 	 * @return the URL of the file containing the resulted alignment
 	 * @throws Exception
 	 */
@@ -75,7 +75,7 @@ public class Matching {
 		URL res=null;
 		BKbuilding buildBK=new BKbuilding();
 		buildBK.sourceIRI=sourceOntologyURI;
-		Map<String, TreeSet<Noeud>> builtBk = buildBK.BuildBK();
+		Map<String, TreeSet<Mapping>> builtBk = buildBK.BuildBK();
 		System.out.println("la taille du BK selectionnée est de: "+builtBk.size() );
 		
 		BKuse useBK=new BKuse(Parameters.sourceOntology, Parameters.targetOntology);
@@ -84,30 +84,29 @@ public class Matching {
 		useBK.BkOntologiesCodes=buildBK.BkOntologiesCodes;
 		useBK.BKexploitation(builtBk);
 		
-		resultAlignment= selection(Parameters.mappingSelectionThreshold);
+		resultAlignment= selection(Parameters.mappingSelectionThreshold, Parameters.derivedCheminsPath);
 		String resFile=Parameters.ResultFolderPath+"res.rdf";
 		Fichier fichierResultat=new Fichier(resFile);
 		fichierResultat.deleteFile();
 		res=fichierResultat.ecrire(getOAEIalignmentFormat());
 		
-		LogMapRepair r=new LogMapRepair();
-		Set<MappingObjectStr> repairedMappings = r.useLogMapRepair(Parameters.sourceOntology.toString(), Parameters.targetOntology.toString(), res.getPath());		
-		resultAlignment.clear();
-		for (MappingObjectStr mappingObjectStr : repairedMappings) {
-		resultAlignment.add(mappingObjectStr.getIRIStrEnt1()+','+mappingObjectStr.getIRIStrEnt2()+','+mappingObjectStr.getConfidence());
+		
+		//Repairing the generated alignment with LogMapRepair module if Parameters.logMapRepair is true
+		if(Parameters.logMapRepair)
+		{
+			LogMapRepair r=new LogMapRepair();
+			Set<MappingObjectStr> repairedMappings = r.useLogMapRepair(Parameters.sourceOntology.toString(), Parameters.targetOntology.toString(), res.getPath());		
+			resultAlignment.clear();
+			for (MappingObjectStr mappingObjectStr : repairedMappings) 
+			{
+			resultAlignment.add(mappingObjectStr.getIRIStrEnt1()+','+mappingObjectStr.getIRIStrEnt2()+','+mappingObjectStr.getConfidence());
+			}
+			resFile=Parameters.ResultFolderPath+"res2.rdf";
+			fichierResultat=new Fichier(resFile);
+			fichierResultat.deleteFile();
+			res=fichierResultat.ecrire(getOAEIalignmentFormat());
 		}
 		
-		resFile=Parameters.ResultFolderPath+"res2.rdf";
-		fichierResultat=new Fichier(resFile);
-		fichierResultat.deleteFile();
-		res=fichierResultat.ecrire(getOAEIalignmentFormat());
-		
-		
-		/*resultAlignment=semanticVerification(source.toString(), target.toString(),fichierResultat.path);	
-		resFile=C.ResultFolderPath+"resultat.rdf";
-		fichierResultat=new Fichier(resFile);
-		fichierResultat.deleteFile();
-		res=fichierResultat.ecrire(getOAEIalignmentFormat());*/
 		return res;
 	}
 	
@@ -158,42 +157,9 @@ public class Matching {
 		return df.format(precision)+','+df.format(recall)+","+df.format(fscore);
 	}
 	
-	/**
-	 * 
-	 * @param threshold
-	 * @return
-	 * @throws NumberFormatException
-	 * @throws IOException
-	 */
-	public static TreeSet<String> selection(double threshold, boolean obo) throws NumberFormatException, IOException
-	{
-		TreeSet<String> finalMappings=new TreeSet<>();
-		long debut =System.currentTimeMillis();
-		File chemins=new File(Parameters.derivedCheminsPath);
-		if(chemins.exists())
-		{BufferedReader reader = new BufferedReader(new FileReader(Parameters.derivedCheminsPath)); 
-		String line = null; 
-		String value = null; 
-	    int cpt=0;
-	    Map<String,Map<String,MappingCandidate> > candidats=new HashMap<>();
-		while ((line = reader.readLine()) != null) 
-		{
-			StringTokenizer lineParser = new StringTokenizer(line, ",");
-			String code1= (String) lineParser.nextElement();
-			String code2 = (String) lineParser.nextElement();
-			String uri1=BKbuilding.sourceElements.get(BKbuilding.sourceAcronym+Parameters.separator+code1);
-			String uri2=BKuse.targetElements.get(BKuse.targetAcronym+Parameters.separator+code2);
-			int pathLength=Integer.parseInt((String) lineParser.nextElement())-1;
-			String path=(String) lineParser.nextElement();
-			double s=1.0/pathLength;
-			finalMappings.add(uri1+','+uri2+','+1.0);
-	}
 
 
-		}
-		else System.out.println("The derivation result is empty");
-		return finalMappings;
-	}
+
 
 	/**
 	 * Cette fonction sélectionne les mapings finaux à partir de l'ensemble des mappings candidats
@@ -202,32 +168,33 @@ public class Matching {
 	 * @throws NumberFormatException les scores sont parsés ont Double ce qui peut générer cette exception
 	 * @throws IOException l'ensemble des mappings candidats sont dans un fichier path, l'ouverture de ce fichier peut générer cette exception
 	 */
-	public static TreeSet<String> selection(double threshold) throws NumberFormatException, IOException
+	public static TreeSet<String> selection(double threshold, String derivedPaths) throws NumberFormatException, IOException
 	{
 		TreeSet<String> finalMappings=new TreeSet<>();
 		long debut =System.currentTimeMillis();
-		File chemins=new File(Parameters.derivedCheminsPath);
+		File chemins=new File(derivedPaths);
 		if(chemins.exists())
-		{BufferedReader reader = new BufferedReader(new FileReader(Parameters.derivedCheminsPath)); 
-		String line = null; 
-		String value = null; 
-	    int cpt=0;
-	    Map<String,Map<String,MappingCandidate> > candidats=new HashMap<>();
-		while ((line = reader.readLine()) != null) 
 		{
-			StringTokenizer lineParser = new StringTokenizer(line, ",");
-			String uri1 = (String) lineParser.nextElement();
-			String uri2 = (String) lineParser.nextElement();
-			int pathLength=Integer.parseInt((String) lineParser.nextElement())-1;
-			String path=(String) lineParser.nextElement();
-			//String res=(String) lineParser.nextElement();
-			//parser le chemin
-			 lineParser = new StringTokenizer(path, "$$");
-			 lineParser.nextToken();
-			 Double avgScore=0.0, MultScore=1.0;
-			 double score=0;
-			 boolean subclass=false;
-			 while(lineParser.hasMoreTokens())
+			BufferedReader reader = new BufferedReader(new FileReader(derivedPaths)); 
+			String line = null; 
+			String value = null; 
+			int cpt=0;
+			Map<String,Map<String,MappingCandidate> > candidats=new HashMap<>();
+			while ((line = reader.readLine()) != null) 
+			{
+				StringTokenizer lineParser = new StringTokenizer(line, ",");
+				String uri1 = (String) lineParser.nextElement();
+				String uri2 = (String) lineParser.nextElement();
+				int pathLength=Integer.parseInt((String) lineParser.nextElement())-1;
+				String path=(String) lineParser.nextElement();
+				//String res=(String) lineParser.nextElement();
+				//parser le chemin
+				lineParser = new StringTokenizer(path, "$$");
+				lineParser.nextToken();
+				Double avgScore=0.0, MultScore=1.0;
+				double score=0;
+				Boolean subclass=false;
+				while(lineParser.hasMoreTokens())
 			 {
 				 String m=lineParser.nextToken();
 				 if(!m.equals(""))
@@ -235,16 +202,23 @@ public class Matching {
 				    StringTokenizer details = new StringTokenizer(m, Parameters.separator);
 					score=Double.parseDouble(details.nextToken());
 					if(score==2.0)score=1.0;
-					if(score==3.0){score=1.0;subclass=true;}
+					if(score==3.0)
+					{
+						score=1.0;
+						subclass=true;
+					}
 				 }
 				 avgScore=(avgScore+score)/2;
 				 MultScore=MultScore*score;
 			 }
+			 String relation;
+			 if(subclass)relation ="subClassOf";
+			 else relation = "=";
 			 Map<String,MappingCandidate> liste;
 			if (!candidats.keySet().contains(uri1))
 			{
 				liste =new HashMap<>();
-				liste.put(uri2,new MappingCandidate(1,pathLength,avgScore,MultScore,null));
+				liste.put(uri2,new MappingCandidate(1,pathLength,avgScore,MultScore,relation));
 				candidats.put(uri1, liste);
 			}
 			else
@@ -252,7 +226,7 @@ public class Matching {
 				liste=candidats.get(uri1);
 				if(!liste.keySet().contains(uri2))
 				{
-					liste.put(uri2,new MappingCandidate(1,pathLength,avgScore,MultScore,null));
+					liste.put(uri2,new MappingCandidate(1,pathLength,avgScore,MultScore,relation));
 					candidats.put(uri1, liste);
 				}
 				else
@@ -272,7 +246,7 @@ public class Matching {
 		    double maxMultCandidatScore=0.0;
 		    boolean stop =false;
 		    MappingCandidate maxCandidate=null;
-		    String uriCandidate=null;
+		    String uriCandidate=null, maxRelation=null;
 			for (String uri2 : liste.keySet())
 			{	
 				MappingCandidate c = liste.get(uri2);
@@ -280,18 +254,19 @@ public class Matching {
 				{
 					if(c.minPathLength==1 && c.pathNumber>1)
 					{
-						finalMappings.add(uri1+','+uri2+','+c.MaxMult);
+						finalMappings.add(uri1+','+uri2+','+c.MaxMult+','+c.relation);
 						stop=true;
 					}
 					if(c.MaxAvg>=1.0) 
 					{
-						finalMappings.add(uri1+','+uri2+','+c.MaxMult); 
+						finalMappings.add(uri1+','+uri2+','+c.MaxMult+','+c.relation); 
 						stop=true;
 					}
 					if(c.MaxMult>maxMultCandidatScore)
 					{
 						maxMultCandidatScore=c.MaxMult;
 						maxCandidate=c;
+						maxRelation=c.relation;
 						uriCandidate=uri2;
 					}
 				}
@@ -300,19 +275,19 @@ public class Matching {
 			{
 				if(!stop)
 				{
-				finalMappings.add(uri1+','+uriCandidate+','+maxMultCandidatScore);	
+				finalMappings.add(uri1+','+uriCandidate+','+maxMultCandidatScore+','+maxRelation);	
 				}
 			}
 			
 		}
-		TreeSet<String> a = selection2(Parameters.derivedCheminsPath, threshold);
+		TreeSet<String> a = selection2(derivedPaths, threshold);
 		for (String m : a) {
 			StringTokenizer lineParser = new StringTokenizer(m, ",");
 			String uri2=lineParser.nextToken();
 			String uri1=lineParser.nextToken();
 			String score=lineParser.nextToken();
-			//String res=lineParser.nextToken();
-			finalMappings.add(uri1+','+uri2+','+score);	
+			String relation=lineParser.nextToken();
+			finalMappings.add(uri1+','+uri2+','+score+','+relation);	
 		}
       }
 		else System.out.println("The derivation result is empty");
@@ -341,6 +316,7 @@ public class Matching {
 			 lineParser.nextToken();
 			 Double avgScore=0.0, MultScore=1.0;
 			 double score=0;
+			 boolean subClass=false;
 			 while(lineParser.hasMoreTokens())
 			 {
 				 String m=lineParser.nextToken();
@@ -349,15 +325,23 @@ public class Matching {
 				    StringTokenizer details = new StringTokenizer(m, Parameters.separator);
 					score=Double.parseDouble(details.nextToken());
 					if(score==2.0)score=1.0;
+					else if(score==3.0)
+					{
+						subClass=true;
+						score=1.0;
+						}
 				 }
 				 avgScore=(avgScore+score)/2;
 				 MultScore=MultScore*score;
 			 }
+			 String relation;
+			 if(subClass)relation="subClassOf";
+			 else relation="=";
 			 Map<String,MappingCandidate> liste;
 			if (!candidats.keySet().contains(uri1))
 			{
 				liste =new HashMap<>();
-				liste.put(uri2,new MappingCandidate(1,pathLength,avgScore,MultScore,null));
+				liste.put(uri2,new MappingCandidate(1,pathLength,avgScore,MultScore,relation));
 				candidats.put(uri1, liste);
 			}
 			else
@@ -365,7 +349,7 @@ public class Matching {
 				liste=candidats.get(uri1);
 				if(!liste.keySet().contains(uri2))
 				{
-					liste.put(uri2,new MappingCandidate(1,pathLength,avgScore,MultScore,null));
+					liste.put(uri2,new MappingCandidate(1,pathLength,avgScore,MultScore,relation));
 					candidats.put(uri1, liste);
 				}
 				else
@@ -391,8 +375,16 @@ public class Matching {
 				MappingCandidate c = liste.get(uri2);
 				if(c.MaxMult>=threshold)
 				{
-					if(c.minPathLength==1 && c.pathNumber>1){finalMappings.add(uri1+','+uri2+','+c.MaxMult);stop=true;}
-					if(c.MaxAvg>=1.0) {finalMappings.add(uri1+','+uri2+','+c.MaxMult); stop=true;}
+					if(c.minPathLength==1 && c.pathNumber>1)
+					{
+						finalMappings.add(uri1+','+uri2+','+c.MaxMult+','+c.relation);
+						stop=true;
+					}
+					if(c.MaxAvg>=1.0) 
+					{
+						finalMappings.add(uri1+','+uri2+','+c.MaxMult+','+c.relation); 
+						stop=true;
+					}
 					if(c.MaxMult>maxMultCandidatScore)
 					{
 						maxMultCandidatScore=c.MaxMult;
@@ -405,7 +397,7 @@ public class Matching {
 			{
 				if(!stop)
 				{
-				finalMappings.add(uri1+','+uriCandidate+','+maxMultCandidatScore);	
+				finalMappings.add(uri1+','+uriCandidate+','+maxMultCandidatScore+','+maxCandidate.relation);	
 				}
 			}
 			
@@ -472,8 +464,7 @@ public class Matching {
 	          URI entity1 = new URI(lineParser.nextToken());
 	          URI entity2 = new URI(lineParser.nextToken());
 	          double score = Double.parseDouble(lineParser.nextToken());
-
-	          String relation = "=";
+	          String relation = lineParser.nextToken();
 
 	          // add to alignment
 	          alignments.addAlignCell(entity1, entity2, relation, score);
