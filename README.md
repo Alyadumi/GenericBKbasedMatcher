@@ -23,5 +23,6 @@ DataSets for ML based selection
 
 
 
-[1] https://www.sciencedirect.com/science/article/pii/S1570826818300179?via%3Dihub
-[2] http://www.websemanticsjournal.org/index.php/ps/article/view/483
+[1] https://www.sciencedirect.com/science/article/pii/S1570826818300179?via%3Dihub.
+
+[2] http://www.websemanticsjournal.org/index.php/ps/article/view/483.
