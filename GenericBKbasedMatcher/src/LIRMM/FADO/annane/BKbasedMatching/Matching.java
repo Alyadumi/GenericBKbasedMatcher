@@ -369,6 +369,7 @@ public class Matching {
 		    double maxMultCandidatScore=0.0;
 		    boolean stop =false;
 		    MappingCandidate maxCandidate=null;
+		    String maxRelation = null;
 		    String uriCandidate=null;
 			for (String uri2 : liste.keySet())
 			{	
@@ -389,6 +390,7 @@ public class Matching {
 					{
 						maxMultCandidatScore=c.MaxMult;
 						maxCandidate=c;
+						maxRelation=c.relation;
 						uriCandidate=uri2;
 					}
 				}
@@ -397,7 +399,7 @@ public class Matching {
 			{
 				if(!stop)
 				{
-				finalMappings.add(uri1+','+uriCandidate+','+maxMultCandidatScore+','+maxCandidate.relation);	
+				finalMappings.add(uri1+','+uriCandidate+','+maxMultCandidatScore+','+maxRelation);	
 				}
 			}
 			

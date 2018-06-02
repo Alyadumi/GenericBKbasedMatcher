@@ -116,6 +116,7 @@ public class BKbuilding {
 		if(Parameters.ExistingMappingsPath!=null)chargerBK_Mappings();
 		//Select the BK concepts related to the no matched source concepts directly or indirectly
 		selectSubGraph(URIs);
+		System.out.println("Taille initiale: "+BkGraph.size());
 		enrichWithRelatedClasses();
 		createOwlFile2();
 		return BkGraph;
@@ -221,11 +222,9 @@ public class BKbuilding {
 	/* *********************************************************************************************** */
 	 void enrichWithRelatedClasses() throws MalformedURLException, URISyntaxException
 	 {
+			int cpt=0;
 			Model ontology=null;
-			String fathers="",
-					children;
 			ResultSet res;
-			String newUri;
 			QuerySolution sol;	
 			
 			TreeSet<String> newConcepts=new TreeSet<>();
@@ -239,18 +238,20 @@ public class BKbuilding {
 				ontology=JenaMethods.LoadOntologyModelWithJena(path);
 				for (Relation relation : Parameters.BKselectionExplorationRelations) 	
 				{
-					for(int i=1;i<=Parameters.BKselectionExplorationLength;i++);
+					for(int j=1;j<=Parameters.BKselectionExplorationLength;j++)
 					{
+						System.out.println(j);
 						//organize the selected concepts per ontology
 						ontologyConcepts = categorizeConcepts(newConcepts);
 						newConcepts=new TreeSet<>();
+
 						/* ********************** looking for fathers *********************************** */
-						String Query=Parameters.prefix+"SELECT ?c ?f  where {?c <"+relation+"> ?f} ";
+						String Query=Parameters.prefix+"SELECT ?c ?f  where {?c <"+relation.property+"> ?f} ";
 						if(ontologyConcepts.get(ontoURI)!=null)
 						{
 							Query=Query+ " VALUES ?c  {"+ontologyConcepts.get(ontoURI)+"}";
 							res = JenaMethods.ExecuteQuery(Query, ontology);
-							if(res!=null)
+							if(res!=null && res.hasNext())
 							{
 								while(res.hasNext())
 								{
@@ -269,19 +270,21 @@ public class BKbuilding {
 										//Mapping child=new Mapping(childURI, ontoURI, 1.0,relation.getAbbreviation(),ontoURI);
 										Mapping father=new Mapping(fatherURI, ontoURI,1.0,relation.getAbbreviation(),ontoURI);
 										BkGraph.get(childConcept).add(father);
-									//	BkGraph.get(fatherConcept).add(child); 
+										//BkGraph.get(fatherConcept).add(child); 
 									}
 								}//endWhile	
 							}//endIF
 
 		      /* ********************** looking target classes *********************************** */
-							Query=Parameters.prefix+"SELECT ?c ?f  where {?c <"+org.apache.jena.vocabulary.RDFS.subClassOf+"> ?f} ";
+							Query=Parameters.prefix+"SELECT ?c ?f  where {?c <"+relation.getProperty()+"> ?f} ";
 							Query=Query+ " VALUES ?f  {"+ontologyConcepts.get(ontoURI)+"}";
 							res = JenaMethods.ExecuteQuery(Query, ontology);
 							if(res!=null)
 							{
+							cpt=0;
 								while(res.hasNext())
 								{
+									cpt++;
 									sol = res.next();
 									String childURI=sol.get("c").toString();
 									if(childURI.contains("http"))
@@ -301,12 +304,13 @@ public class BKbuilding {
 									}
 								}	
 							}//endIF
-							ontology.close();						
+													
 						}
 						
 					}
-						System.out.println("after "+BkGraph.size());
+						System.out.println("after "+BkGraph.size()+" cpt: "+cpt);
 				}
+				ontology.close();
 			}
 	 }
 	 /* ***************************************************** */

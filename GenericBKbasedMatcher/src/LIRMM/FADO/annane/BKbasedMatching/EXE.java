@@ -29,7 +29,9 @@ public class EXE {
 		
 		//Parameters
 		Parameters.derivationStrategy=Parameters.derivationStrategies.neo4j;
-		Parameters.BKselectionInternalExploration=false;
+		
+		Parameters.BKselectionInternalExploration=true;
+		
 		File sourceOntologyFile=new File(C.mouse);//source ontology
 		File targetOntologyFile=new File(C.human);//target ontology
 		Parameters.sourceOntology=sourceOntologyFile.toURI().toURL();
@@ -48,10 +50,10 @@ public class EXE {
 		Parameters.BKselectionInternalExploration=true;
 		Parameters.BKselectionExplorationLength=1;
 		Parameters.BKselectionExplorationRelations= new ArrayList<Relation>();
-		Relation r=new Relation(org.apache.jena.vocabulary.RDFS.subClassOf.toString(),"<", "subClassOf");
+		Relation r=new Relation("http://www.w3.org/2000/01/rdf-schema#subClassOf","<", "subClassOf");
 		Parameters.BKselectionExplorationRelations.add(r);
 		
-		Parameters.mappingSelectionThreshold=0.1;
+		Parameters.mappingSelectionThreshold=0.0;
 		
 		Parameters.logMapRepair=false;
 		

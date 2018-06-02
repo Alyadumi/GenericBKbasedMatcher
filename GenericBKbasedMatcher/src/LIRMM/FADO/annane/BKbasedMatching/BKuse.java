@@ -1,7 +1,10 @@
 package LIRMM.FADO.annane.BKbasedMatching;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -38,8 +41,36 @@ public class BKuse {
 	Map<String,String> BkOntologiesCodes;
 	public static HashMap<String, String> targetElements ;
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws MalformedURLException, URISyntaxException {
 		// TODO Auto-generated method stub
+		File f=new File("notMatchedConcepts");
+		TreeSet<String> uris=new TreeSet<>();
+		
+		Matching m=new Matching(C.mouse, C.human);
+		if (f.exists()) 
+		{
+				BufferedReader reader;
+				try 
+				{
+					reader = new BufferedReader(new FileReader(f));
+					String line = null;
+					String uri;
+					while ((line = reader.readLine()) != null) 
+					{
+					  uris.add(line);
+					}
+					m.BkBasedMatching(uris);
+				 }
+				catch(Exception e)
+				{
+					e.printStackTrace();	
+				}
+			}
+		
+		
+		
+		
+
 
 	}
 /**
@@ -208,24 +239,27 @@ public class BKuse {
 			BkGraph.clear();
 
 			//load the generated mappings to Neo4j
-			loadMappingsToNeo4J(Parameters.BkFolderPath);
+			loadMappingsToNeo4J(Parameters.BkFolderPath,false);
 			
 			//Delete the old derivation result file
 	        fichier.path=Parameters.derivationResultFolderPath;
 			fichier.deleteFile();
-			Neo4Jderivation(false, Parameters.derivedCheminsPath);		
+			Neo4Jderivation(Parameters.derivedCheminsPath);		
 		}
 		else
 			throw new NullPointerException("Please, specify the derivation strategy parameter.");
 		//BKselectionWithInternalExploration for the concepts that have not been matched
 		if(Parameters.BKselectionInternalExploration)
 		{
+            if(matchedSourceUris.size()==0)throw new Exception("matchedSourceUris is zero size!");
+			System.out.println("number of matched source concepts: "+matchedSourceUris.size());
 			//les concepts non matcheé
 			TreeSet<String> notMatchedConcepts=new TreeSet<>();
             notMatchedConcepts=(TreeSet<String>) sourceUris.clone();
-            notMatchedConcepts.removeAll(matchedSourceUris);
-            if(matchedSourceUris.size()==0)throw new Exception("matchedSourceUris is zero size!");
-			System.out.println("number of matched source concepts: "+matchedSourceUris.size());
+            notMatchedConcepts.removeAll(matchedSourceUris); 
+            
+            Fichier f=new Fichier("notMatchedConcepts.csv");
+            f.ecrire(Fichier.treeToString(notMatchedConcepts));
             
 			if(notMatchedConcepts.size()>0)
 			{
@@ -308,8 +342,8 @@ public class BKuse {
 			f.ecrire(Parameters.BK_target_classes_path, "id1,o1,id2,o2,a,relation"+Fichier.retourAlaLigne+Fichier.treeToString(subClass));
 			//f.ecrire(Parameters.BkFolderPath+"superclass.csv", "id1,o1,id2,o2"+Fichier.retourAlaLigne+Fichier.treeToString(superClass));
 			BkGraph.clear();
-			loadMappingsToNeo4J(Parameters.BkFolderPath);
-			Neo4Jderivation(true,derivationPathForEnrichedBK);
+			loadMappingsToNeo4J(Parameters.BkFolderPath,true);
+			Neo4JderivationEnriched(derivationPathForEnrichedBK);
 		}
 		else 
 		{
@@ -319,7 +353,7 @@ public class BKuse {
 	/*
 	 * ********************************* loadMappingsToNeo4J
 	 */
-	static public void loadMappingsToNeo4J(String sourceFolder) throws IOException
+	static public void loadMappingsToNeo4J(String sourceFolder, boolean exploration) throws IOException
 	{
 		long debut=System.currentTimeMillis();
 		//delete existing graph
@@ -361,7 +395,7 @@ public class BKuse {
          "CREATE (concept1)-[:obo{type:line.relation}]->(concept2);";
 	Parameters.session.run(query);
 	
-	if(Parameters.BKselectionInternalExploration)
+	if(exploration)
 	{
 		File f=new File(Parameters.BK_target_classes_path);
 		if(f.exists())
@@ -380,10 +414,11 @@ public class BKuse {
 		}
 	}
 }
+	
 	/*
 	 * *****************************Derivation with Neo4J
 	 */ 
-	   public  void Neo4Jderivation(Boolean directedDerivation, String derivationPath) throws Exception
+	   public  void Neo4Jderivation(String derivationPath) throws Exception
 	   {
 		 String path;
 		 	   	
@@ -393,13 +428,7 @@ public class BKuse {
 		   String id=uriS;
 		   String ontology=sourceIRI;
 
-		   String	query;
-		   if(directedDerivation)
-			   query="MATCH p=(n:concept{ontology:'"+ontology+"',id:'"+id+"'})-"
-	   			+ "[r*1.."+Parameters.derivationMaxPathLength+"]->(m:concept{ontology:'"+targetIRI+"'})"+
-	   			"RETURN distinct m.id as target, p";
-		   else
-			   query="MATCH p=(n:concept{ontology:'"+ontology+"',id:'"+id+"'})-"
+		   String	 query="MATCH p=(n:concept{ontology:'"+ontology+"',id:'"+id+"'})-"
 			   			+ "[r*1.."+Parameters.derivationMaxPathLength+"]-(m:concept{ontology:'"+targetIRI+"'})"+
 			   			"RETURN distinct m.id as target, p";
 			   
@@ -447,6 +476,80 @@ public class BKuse {
 	   		}//end while	   		
 	   	}
 	   	
+	   }
+	   }
+	   public  void ExecuteDerivationQuery(	String uriS,TreeSet<String> targetUris,String query,String derivationPath) throws Exception
+	   {
+		   String path;
+	   		StatementResult result= null;
+	   		result=Parameters.session.run(query);
+	   		if(result!=null && result.hasNext())
+	   		{
+	   			while(result.hasNext())
+	   			{	path="";					
+	   				Record record=result.next();
+	   				Path p=record.get("p").asPath();
+	   				ArrayList<String> nodes=null;
+	   				ArrayList<Double> scores=null;
+	   				String uriTarget=record.get("target").asString();
+	   				if(targetUris.contains(uriTarget))
+	   				{ 	
+	   					this.matchedSourceUris.add(uriS);
+	   					nodes=new ArrayList<>();
+	   				    scores=new ArrayList<>();
+	   					for (Node Mapping : p.nodes()) 
+	   					{
+	   						//System.out.println(Mapping.get("id").asString()+"#"+Mapping.get("ontology").asString());
+							nodes.add(Mapping.get("id").asString()+Parameters.separator+Mapping.get("ontology").asString());
+						}
+		   				//System.out.println(nodes.size()+" nodes");
+	   					scores.add(null);
+	   					for (Relationship r : p.relationships()) 
+	   					{
+							if(r.hasType("obo"))scores.add(2.0);
+							else if(r.hasType("internal"))scores.add(3.0);
+							else scores.add(r.get("a").asDouble());
+						}
+	   					path="$$";
+		   			//	System.out.println(nodes.size()+" nodes");
+	   					for(int i=0;i<nodes.size();i++)
+	   					{
+	   						path=path+scores.get(i)+Parameters.separator+nodes.get(i)+"$$";
+	   					}
+	   					//System.out.println(path);
+
+	   					Fichier f=new Fichier("");
+	   					f.ecrire(derivationPath, uriS+','+uriTarget+','+nodes.size()+','+path+','+Fichier.retourAlaLigne);
+	   			    }
+	   				
+	   		}//end while	   		
+	   	}
+	   }
+	   
+	/*
+	 * *****************************Derivation with Neo4J
+	 */ 
+	   public  void Neo4JderivationEnriched(String derivationPath) throws Exception
+	   {
+		 String path;
+		 	   	
+	   	System.out.println("****************** Derivation with Neo4j is started");
+	   for (String uriS : sourceUris) 
+	   {
+		   
+
+		   String	query="MATCH p=(n:concept{ontology:'"+sourceIRI+"',id:'"+uriS+"'})-"
+	   			+ "[r*1.."+Parameters.derivationMaxPathLength+"]->(m:concept{ontology:'"+targetIRI+"'})"+
+	   			"RETURN distinct m.id as target, p";
+		   ExecuteDerivationQuery(uriS,targetUris, query, derivationPath);	   	
+	   }
+	   
+	   for (String uriT : targetUris) 
+	   {
+		   String	query="MATCH p=(n:concept{ontology:'"+targetIRI+"',id:'"+uriT+"'})-"
+	   			+ "[r*1.."+Parameters.derivationMaxPathLength+"]->(m:concept{ontology:'"+sourceIRI+"'})"+
+	   			"RETURN distinct m.id as target, p";
+		   ExecuteDerivationQuery(uriT,sourceUris, query, derivationPath);	   	
 	   }
 	   }
 	/*
