@@ -10,7 +10,13 @@ import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.GraphDatabase;
 import org.neo4j.driver.v1.Session;
 
+import com.hp.hpl.jena.graph.query.Matcher;
+
 import OAEI2017.MatcherBridge;
+
+
+
+
 
 
 
@@ -25,6 +31,7 @@ public class Parameters {
 	public static String   ExistingMappingsPath="BK"+File.separator+"ExistingMappings"+File.separator+"obo.csv";
 	public static String   alignmentsRepositoryFolderPath="BK"+File.separator+"alignmentsRepository"+File.separator;
 	public static MatcherBridge matcher=new MatcherBridge();
+	
 	
     public static boolean  BKselectionInternalExploration=false;
 	public static ArrayList<Relation> BKselectionExplorationRelations;
