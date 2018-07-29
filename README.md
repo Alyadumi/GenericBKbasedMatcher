@@ -1,6 +1,6 @@
 # GenericBKbasedMatcher
 
-This project is a generic background knowledge based ontology matching. It has been implemented this framework during my thesis that aimed to enhance ontology matching using external knowledge resources. It served for the evaluation of our approach. Please see [1] for more detail.
+This project is the code of a Generic Background-knowledge based ontology Matcher (GBM). GBM has been implemented during my thesis that aimed to enhance ontology matching using external knowledge resources. GBM is the implementation of our  approach. Please see [1] for more detail.
 For the reuse purpose, our framework uses any direct matcher as a black box. In addition, it offers several parameters that allows to have various configurations according to the user needs.
 
 We used this framework to participate in the OAEI 2017.5 compaign, with YAM++[2] as a direct matcher and two biomedical ontologies as background knowledge DOID and UBERON. The results may be found here https://goo.gl/A496ug
