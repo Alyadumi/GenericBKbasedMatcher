@@ -33,8 +33,21 @@ In addition, we added a new method that allows to enrich the built BK with inter
 Finally, mapping derivation offers the following parameters (static variables in *Parameters* class):
 1. derivationStrategies: it takes one of the two possible values "neo4j" or "specific_algo"
 2. derivationMaxPathLength: the built BK has a graph format, the derivation process looks for paths between source and target concepts. This parameter limits the length of these paths. The length of a given path is the number of its edges (by default it is 4). 
-        
-Please, before running the code be sure that all libraries related to the used direct matcher are referenced. These libraries are available in the lib folder.
+
+**Mapping selection.** GBM implements the two mapping selection methods that presented in [1]: ML based selection and Rule based selection methods. When choosing the ML based selection, the user has to provide one or several datasets, such that each dataset is a folder in the *BK/DataSets* folder, which contains two ontologies and their validated alignment. These datasets will be used for training the classifier. When choosing te rule based selection, the user may specify a threshold value to select only the mappings that have a score equivalent to or higher than this threshold value. To summarize, for mapping selection, GBM offers the following parametrs:
+
+1. mappingSelectionStrategies: it may takes one of the two values "Rule_based" or "ML_based".
+2. mappingSelectionThreshold: it takes a value between 0 and 1 (by default, it is 0)
+3. training dataSets
+
+The ML-based selection uses the RandomForest algorithm.
+
+**Semantic verification.** Currently, GBM reuses the LogMapRepair module to verify the consistency of the generated alignment. The semantic verification is optional and the user may disable it using the *Semantic verification* parameter.
+
+
+The list of all parameters may be found in the *Parameters* class.
+
+Please, before running the code be sure that all libraries and resources required by the direct matcher are referenced.
 
 The framework offers two derivation strategies (Neo4j and specific_algo). When using the Neo4j strategy, the Neo4j graph database should be installed and variables driver and session in the Parameters class should be initialized.
 DataSets for ML based selection
