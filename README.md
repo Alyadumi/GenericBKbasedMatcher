@@ -28,6 +28,11 @@ The generated alignment should be stored in RDF format with the API alignment to
 4. BKselectionExplorationRelations: specifies the relations that GBM should generate in addition to equivalence.
 5. BKselectionExplorationLength: the internal exploration length of BK ontologies. A value of 1 means to return children and parents of the already selected concepts, while a value of 2 means to return parents, grandparents, children, grandchildren
 In addition, we added a new method that allows to enrich the built BK with internal relations extracted from the preselected ontologies.
+
+**Mapping derivation.** GBM provides two mapping derivation strategies. The first one assumes that the Neo4j is already installed and the Built BK is stored as a Neo4j graph database. It consists in searching all possible paths between source and target concepts. This derivation strategy is complete, i.e., it finds all possible candidate mappings, however it is not scalable for large built BK graphs --when having a large number of BK ontologies -- and it depends on Neo4j. We tried to address these issues by implementing another derivation algorithm, which represents the second derivation strategy.
+Finally, mapping derivation offers the following parameters (static variables in *Parameters* class):
+1. derivationStrategies: it takes one of the two possible values "neo4j" or "specific_algo"
+2. derivationMaxPathLength: the built BK has a graph format, the derivation process looks for paths between source and target concepts. This parameter limits the length of these paths. The length of a given path is the number of its edges (by default it is 4). 
         
 Please, before running the code be sure that all libraries related to the used direct matcher are referenced. These libraries are available in the lib folder.
 
