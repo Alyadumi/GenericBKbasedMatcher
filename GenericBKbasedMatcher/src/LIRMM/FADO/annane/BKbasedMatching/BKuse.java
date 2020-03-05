@@ -41,38 +41,7 @@ public class BKuse {
 	Map<String,String> BkOntologiesCodes;
 	public static HashMap<String, String> targetElements ;
 	
-	public static void main(String[] args) throws MalformedURLException, URISyntaxException {
-		// TODO Auto-generated method stub
-		File f=new File("notMatchedConcepts");
-		TreeSet<String> uris=new TreeSet<>();
-		
-		Matching m=new Matching(C.mouse, C.human);
-		if (f.exists()) 
-		{
-				BufferedReader reader;
-				try 
-				{
-					reader = new BufferedReader(new FileReader(f));
-					String line = null;
-					String uri;
-					while ((line = reader.readLine()) != null) 
-					{
-					  uris.add(line);
-					}
-					m.BkBasedMatching(uris);
-				 }
-				catch(Exception e)
-				{
-					e.printStackTrace();	
-				}
-			}
-		
-		
-		
-		
 
-
-	}
 /**
  * Constructor
  * @param source

@@ -458,6 +458,28 @@ public class Fichier {
 			}
 	return null;
 		}//ecrire
+// *********************************************************************
+    /**
+     * if it exists return the file, otherwise create it and return the file */
+	 public static File returnFolder (String path) {
+		 File file=new File(path);
+			if(file.exists())
+			{
+				return file;
+			}
+			else
+			{
+				 boolean bool = file.mkdir();
+			      if(bool){
+			    	  return file;
+			      }
+			      else 
+			    	  {
+			    	    new Exception("The system could not create the folder: "+path).printStackTrace();
+			    	    return null;
+			    	  }
+			}
+	 }
 //***********************************************************************
 	public  void ecrire ( String chemin, String text)
 	{

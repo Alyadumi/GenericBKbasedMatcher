@@ -22,18 +22,26 @@ public class EXE {
 		//matcher may be an instance of any direct matcher that implements a static function align(URL source, URL target) function
 		//The align function should return the URL of the generated alignment between source and target
 		
-		String sourcePath="C:\\Users\\annane\\Google Drive\\.1.Extension\\OAEI2016\\LargeBio\\T1\\FMA.owl";;
-		String targetPath="C:/Users/annane/Google Drive/.1.Extension/OAEI2016/LargeBio/T1/NCI.owl";
-		String referenceAlignment="C:\\Users\\annane\\Google Drive\\.1.Extension\\OAEI2016\\LargeBio\\with repairs\\oaei_FMA2NCI_UMLS_mappings_with_flagged_repairs.rdf";;
+		// create the necessary folders
+		Fichier.returnFolder("ProcessFolders");
+		Fichier.returnFolder(Parameters.BkAlignmentsFolderPath);
+		Fichier.returnFolder(Parameters.BkFolderPath);
+		Fichier.returnFolder(Parameters.derivationResultFolderPath);
+		Fichier.returnFolder(Parameters.ResultFolderPath);
+		Fichier.returnFolder(Parameters.directAlignmentFolderPath);
 		
+		
+		String referenceAlignment="C:\\Users\\aannane\\Desktop\\MyDocuments\\JWS\\bridges\\Nouveau dossier\\Anatomy\\reference.rdf";
+		String sourcePath="C:\\Users\\aannane\\Desktop\\MyDocuments\\JWS\\bridges\\Nouveau dossier\\Anatomy\\MA.owl";
+		String targetPath="C:\\Users\\aannane\\Desktop\\MyDocuments\\JWS\\bridges\\Nouveau dossier\\Anatomy\\NCI.owl";
 		
 		//Parameters
 		Parameters.derivationStrategy=Parameters.derivationStrategies.neo4j;
 		
 		Parameters.BKselectionInternalExploration=true;
 		
-		File sourceOntologyFile=new File(C.mouse);//source ontology
-		File targetOntologyFile=new File(C.human);//target ontology
+		File sourceOntologyFile=new File(sourcePath);//source ontology
+		File targetOntologyFile=new File(targetPath);//target ontology
 		Parameters.sourceOntology=sourceOntologyFile.toURI().toURL();
 		Parameters.targetOntology=targetOntologyFile.toURI().toURL();
 		
@@ -63,7 +71,7 @@ public class EXE {
 			Matching matcher=new Matching(sourceOntologyFile.toURI().toURL(), targetOntologyFile.toURI().toURL());
 			URL res=matcher.BkBasedMatching();//res will contain the URL of the generated alignment
 			System.out.println("the generated alignment is here: "+res);
-			matcher.ComputeFScore(res, C.ma_nci_Ref);
+			matcher.ComputeFScore(res, referenceAlignment);
 		}
 		else
 			System.out.println("One of the ontologies to align does not exist!");

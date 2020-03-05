@@ -20,6 +20,9 @@ import org.apache.jena.rdf.model.Model;
 import org.semanticweb.owl.align.Alignment;
 import org.semanticweb.owl.align.AlignmentException;
 import org.semanticweb.owl.align.AlignmentVisitor;
+
+import eu.sealsproject.platform.res.tool.api.ToolBridgeException;
+import eu.sealsproject.platform.res.tool.api.ToolException;
 import fr.inrialpes.exmo.align.impl.BasicParameters;
 import fr.inrialpes.exmo.align.impl.URIAlignment;
 import fr.inrialpes.exmo.align.impl.renderer.RDFRendererVisitor;
@@ -408,7 +411,7 @@ public class Matching {
 		return finalMappings;
 	}
 //_________________________________________________________________________________	
-	public URL matchOntologies()
+	public URL matchOntologies() throws ToolException, ToolBridgeException
 	{
 		URL res;
 		if (Parameters.sourceOntology!=null && Parameters.targetOntology!=null)
@@ -419,7 +422,7 @@ public class Matching {
 		return res;
 	}
 	
-	public URL matchOntologies(URL source, URL target,String resultPath) throws URISyntaxException, IOException
+	public URL matchOntologies(URL source, URL target,String resultPath) throws URISyntaxException, IOException, ToolException, ToolBridgeException
 	{ 
 		File destFile;
 		URL res;

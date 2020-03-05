@@ -27,6 +27,8 @@ import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.SKOS;
 import org.semanticweb.owl.align.Alignment;
 
+import eu.sealsproject.platform.res.tool.api.ToolBridgeException;
+import eu.sealsproject.platform.res.tool.api.ToolException;
 import fr.inrialpes.exmo.align.parser.AlignmentParser;
 
 
@@ -56,8 +58,10 @@ public class BKbuilding {
 	Map<String, TreeSet<Mapping>> BkGraph=new HashMap<String, TreeSet<Mapping>>();
 
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws FileNotFoundException, IOException, URISyntaxException {
 		// TODO Auto-generated method stub
+	
+		
 
 	}
 	/**
@@ -72,7 +76,8 @@ public class BKbuilding {
 		BkGraph.clear();
 		ExistingAlignments=getExistingAlignments();
 		File BkOntologiesFolder = new File(Parameters.BKontologiesFolderPath); 
-		BkOntologies = BkOntologiesFolder.list(); 
+		if(BkOntologiesFolder.exists())BkOntologies = BkOntologiesFolder.list(); 
+		else System.out.println("BK ontologies folder does not exist");
 		getOntologyCodes();
 	}
 	/**
@@ -563,8 +568,10 @@ public class BKbuilding {
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 * @throws URISyntaxException
+	 * @throws ToolBridgeException 
+	 * @throws ToolException 
 	 */
-	    void matchOntologyToBKontologies() throws FileNotFoundException, IOException, URISyntaxException
+	    void matchOntologyToBKontologies() throws FileNotFoundException, IOException, URISyntaxException, ToolException, ToolBridgeException
 	   {  
 		  for(int j=0;j<BkOntologies.length;j++)
 		  { 
@@ -594,8 +601,10 @@ public class BKbuilding {
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 * @throws URISyntaxException
+	 * @throws ToolBridgeException 
+	 * @throws ToolException 
 	 */
-	 void generateBkFromOneFolder() throws FileNotFoundException, IOException, URISyntaxException
+	 void generateBkFromOneFolder() throws FileNotFoundException, IOException, URISyntaxException, ToolException, ToolBridgeException
 	{	  
 		  for(int i=0;i<BkOntologies.length;i++)
 		  { 
@@ -617,8 +626,10 @@ public class BKbuilding {
 	 * @param targetIRI The target IRI
 	 * @throws IOException
 	 * @throws URISyntaxException
+	 * @throws ToolBridgeException 
+	 * @throws ToolException 
 	 */
-	void generateBKalignment(URL source,URL target, String sourceIRI, String targetIRI) throws IOException, URISyntaxException
+	void generateBKalignment(URL source,URL target, String sourceIRI, String targetIRI) throws IOException, URISyntaxException, ToolException, ToolBridgeException
 	{
 		if(ExistingAlignments.containsKey(sourceIRI+Parameters.separator+targetIRI))
 		{
@@ -676,6 +687,7 @@ Map<String, String> getExistingAlignments()
 {
 	Map<String,String> existingAlignments=new HashMap<String,String>();
 	String[] alignments=new File(Parameters.alignmentsRepositoryFolderPath).list();  
+	if (alignments != null)
 	  for (String a : alignments) 
 	  {
 		  if(a.contains(".rdf"))
