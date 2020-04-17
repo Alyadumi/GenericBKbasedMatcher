@@ -74,7 +74,7 @@ public class BKbuilding {
 	{
 		globalGraph.clear();
 		BkGraph.clear();
-		ExistingAlignments=getExistingAlignments();
+		ExistingAlignments = getExistingAlignments();
 		File BkOntologiesFolder = new File(Parameters.BKontologiesFolderPath); 
 		if(BkOntologiesFolder.exists())BkOntologies = BkOntologiesFolder.list(); 
 		else System.out.println("BK ontologies folder does not exist");

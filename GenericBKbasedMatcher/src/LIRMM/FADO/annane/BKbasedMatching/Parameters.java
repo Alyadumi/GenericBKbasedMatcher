@@ -10,7 +10,10 @@ import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.GraphDatabase;
 import org.neo4j.driver.v1.Session;
 
-import uk.ac.ox.krr.logmap2.oaei.MatcherBridge;
+//import uk.ac.ox.krr.logmap2.oaei.MatcherBridge;
+
+import OAEI2017.MatcherBridge;
+
 
 
 
@@ -27,7 +30,7 @@ public class Parameters {
 	public static URL 		targetOntology;
     public static String   BKontologiesFolderPath="GenericBKbasedMatcher/BK"+File.separator+"BKontologies"+File.separator;
 	public static String   ExistingMappingsPath="GenericBKbasedMatcher/BK"+File.separator+"ExistingMappings"+File.separator+"obo.csv";
-	public static String   alignmentsRepositoryFolderPath="BK"+File.separator+"alignmentsRepository"+File.separator;
+	public static String   alignmentsRepositoryFolderPath="alignmentsRepository"+File.separator;
 	public static MatcherBridge matcher=new MatcherBridge();
 	
 	

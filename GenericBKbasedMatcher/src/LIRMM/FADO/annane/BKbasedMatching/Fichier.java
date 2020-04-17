@@ -28,15 +28,22 @@ import fr.inrialpes.exmo.align.parser.AlignmentParser;
 
 
 
-public class Fichier {
+public class Fichier extends File {
 	
 	
 	
-	 static String retourAlaLigne="\r\n";
+	 public Fichier(String pathname) {
+		super(pathname);
+		path = pathname;
+		// TODO Auto-generated constructor stub
+	}
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	static String retourAlaLigne="\r\n";
 	 public String path;
-	 public Fichier(String path){
-		 this.path=path;
-	 }
+
 	 
 	 
 	 

@@ -1,0 +1,101 @@
+<?xml version='1.0' encoding='utf-8' standalone='no'?>
+<rdf:RDF xmlns='http://knowledgeweb.semanticweb.org/heterogeneity/alignment#'
+         xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+         xmlns:xsd='http://www.w3.org/2001/XMLSchema#'
+         xmlns:align='http://knowledgeweb.semanticweb.org/heterogeneity/alignment#'>
+<Alignment>
+  <xml>yes</xml>
+  <level>0</level>
+  <type>11</type>
+  <onto1>
+    <Ontology rdf:about="http://mouse.owl">
+      <location>http://mouse.owl</location>
+    </Ontology>
+  </onto1>
+  <onto2>
+    <Ontology rdf:about="http://purl.obolibrary.org/obo/doid.owl">
+      <location>http://purl.obolibrary.org/obo/doid.owl</location>
+    </Ontology>
+  </onto2>
+  <map>
+    <Cell>
+      <entity1 rdf:resource='http://mouse.owl#MA_0001794'/>
+      <entity2 rdf:resource='http://purl.obolibrary.org/obo/DOID_2051'/>
+      <relation>=</relation>
+      <measure rdf:datatype='http://www.w3.org/2001/XMLSchema#float'>0.6385833763488162</measure>
+    </Cell>
+  </map>
+  <map>
+    <Cell>
+      <entity1 rdf:resource='http://mouse.owl#MA_0001113'/>
+      <entity2 rdf:resource='http://purl.obolibrary.org/obo/DOID_9471'/>
+      <relation>=</relation>
+      <measure rdf:datatype='http://www.w3.org/2001/XMLSchema#float'>0.5669999903440475</measure>
+    </Cell>
+  </map>
+  <map>
+    <Cell>
+      <entity1 rdf:resource='http://mouse.owl#MA_0000263'/>
+      <entity2 rdf:resource='http://purl.obolibrary.org/obo/DOID_11406'/>
+      <relation>=</relation>
+      <measure rdf:datatype='http://www.w3.org/2001/XMLSchema#float'>0.515454536676407</measure>
+    </Cell>
+  </map>
+  <map>
+    <Cell>
+      <entity1 rdf:resource='http://mouse.owl#MA_0001795'/>
+      <entity2 rdf:resource='http://purl.obolibrary.org/obo/DOID_10794'/>
+      <relation>=</relation>
+      <measure rdf:datatype='http://www.w3.org/2001/XMLSchema#float'>0.6702438166036437</measure>
+    </Cell>
+  </map>
+  <map>
+    <Cell>
+      <entity1 rdf:resource='http://mouse.owl#MA_0000143'/>
+      <entity2 rdf:resource='http://purl.obolibrary.org/obo/DOID_10456'/>
+      <relation>=</relation>
+      <measure rdf:datatype='http://www.w3.org/2001/XMLSchema#float'>0.44181814670562747</measure>
+    </Cell>
+  </map>
+  <map>
+    <Cell>
+      <entity1 rdf:resource='http://mouse.owl#MA_0001792'/>
+      <entity2 rdf:resource='http://purl.obolibrary.org/obo/DOID_9507'/>
+      <relation>=</relation>
+      <measure rdf:datatype='http://www.w3.org/2001/XMLSchema#float'>0.6697592360678606</measure>
+    </Cell>
+  </map>
+  <map>
+    <Cell>
+      <entity1 rdf:resource='http://mouse.owl#MA_0000237'/>
+      <entity2 rdf:resource='http://purl.obolibrary.org/obo/DOID_1468'/>
+      <relation>=</relation>
+      <measure rdf:datatype='http://www.w3.org/2001/XMLSchema#float'>0.24923077583312991</measure>
+    </Cell>
+  </map>
+  <map>
+    <Cell>
+      <entity1 rdf:resource='http://mouse.owl#MA_0001793'/>
+      <entity2 rdf:resource='http://purl.obolibrary.org/obo/DOID_10791'/>
+      <relation>=</relation>
+      <measure rdf:datatype='http://www.w3.org/2001/XMLSchema#float'>0.6423388439088565</measure>
+    </Cell>
+  </map>
+  <map>
+    <Cell>
+      <entity1 rdf:resource='http://mouse.owl#MA_0001076'/>
+      <entity2 rdf:resource='http://purl.obolibrary.org/obo/DOID_14075'/>
+      <relation>=</relation>
+      <measure rdf:datatype='http://www.w3.org/2001/XMLSchema#float'>0.4124388586471507</measure>
+    </Cell>
+  </map>
+  <map>
+    <Cell>
+      <entity1 rdf:resource='http://mouse.owl#MA_0000422'/>
+      <entity2 rdf:resource='http://purl.obolibrary.org/obo/DOID_2942'/>
+      <relation>=</relation>
+      <measure rdf:datatype='http://www.w3.org/2001/XMLSchema#float'>0.5607692456245422</measure>
+    </Cell>
+  </map>
+</Alignment>
+</rdf:RDF>

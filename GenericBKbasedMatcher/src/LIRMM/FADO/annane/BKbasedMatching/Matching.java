@@ -102,12 +102,12 @@ public class Matching {
 			resultAlignment.clear();
 			for (MappingObjectStr mappingObjectStr : repairedMappings) 
 			{
-			resultAlignment.add(mappingObjectStr.getIRIStrEnt1()+','+mappingObjectStr.getIRIStrEnt2()+','+mappingObjectStr.getConfidence());
+			resultAlignment.add(mappingObjectStr.getIRIStrEnt1()+','+mappingObjectStr.getIRIStrEnt2()+','+mappingObjectStr.getConfidence()+",=");
 			}
 			resFile=Parameters.ResultFolderPath+"res2.rdf";
-			fichierResultat=new Fichier(resFile);
+			fichierResultat = new Fichier(resFile);
 			fichierResultat.deleteFile();
-			res=fichierResultat.ecrire(getOAEIalignmentFormat());
+			res = fichierResultat.ecrire(getOAEIalignmentFormat());
 		}
 		
 		return res;

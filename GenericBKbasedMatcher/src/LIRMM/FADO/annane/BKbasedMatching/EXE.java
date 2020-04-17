@@ -31,31 +31,35 @@ public class EXE {
 		Fichier.returnFolder(Parameters.directAlignmentFolderPath);
 		
 		
-		String referenceAlignment="C:\\Users\\aannane\\Desktop\\MyDocuments\\JWS\\bridges\\Nouveau dossier\\Anatomy\\reference.rdf";
-		String sourcePath="C:\\Users\\aannane\\Desktop\\MyDocuments\\JWS\\bridges\\Nouveau dossier\\Anatomy\\MA.owl";
-		String targetPath="C:\\Users\\aannane\\Desktop\\MyDocuments\\JWS\\bridges\\Nouveau dossier\\Anatomy\\NCI.owl";
+
 		
 		//Parameters
-		Parameters.derivationStrategy=Parameters.derivationStrategies.neo4j;
 		
-		Parameters.BKselectionInternalExploration=true;
-		
+		String referenceAlignment="Test\\OAEI_tracks\\Anatomy\\reference.rdf";
+		String sourcePath="Test\\OAEI_tracks\\Anatomy\\MA.owl";
+		String targetPath="Test\\OAEI_tracks\\Anatomy\\NCI.owl";
 		File sourceOntologyFile=new File(sourcePath);//source ontology
 		File targetOntologyFile=new File(targetPath);//target ontology
 		Parameters.sourceOntology=sourceOntologyFile.toURI().toURL();
 		Parameters.targetOntology=targetOntologyFile.toURI().toURL();
 		
+		Parameters.derivationStrategy=Parameters.derivationStrategies.specific_algo;
+		Parameters.derivationMaxPathLength = 4;
+			
 		/**
 		 * Initializing driver and session variables is necessary only if you want to use Neo4j for the derivation process.
 		 */
-		Parameters.driver = GraphDatabase.driver( "bolt://localhost:7687", AuthTokens.basic("neo4j", "aminaamina")  );
-		Parameters.session=Parameters.driver.session();
-		Parameters.derivationMaxPathLength=4;
+		if(Parameters.derivationStrategy == Parameters.derivationStrategies.neo4j) 
+		{
+			Parameters.driver = GraphDatabase.driver( "bolt://localhost:7687", AuthTokens.basic("neo4j", "aminaamina")  );
+			Parameters.session=Parameters.driver.session();
+		}
+
 		
 		/**
 		 * These parameters are necessary if we want to derive mappings with other relations than equivalence
 		 */
-		Parameters.BKselectionInternalExploration=true;
+		Parameters.BKselectionInternalExploration=false;
 		Parameters.BKselectionExplorationLength=1;
 		Parameters.BKselectionExplorationRelations= new ArrayList<Relation>();
 		Relation r=new Relation("http://www.w3.org/2000/01/rdf-schema#subClassOf","<", "subClassOf");
@@ -63,7 +67,7 @@ public class EXE {
 		
 		Parameters.mappingSelectionThreshold=0.0;
 		
-		Parameters.logMapRepair=false;
+		Parameters.logMapRepair= true;
 		
 		//match the input ontologies if they exist
 		if(Parameters.matcher!=null && sourceOntologyFile.exists()&&targetOntologyFile.exists())
