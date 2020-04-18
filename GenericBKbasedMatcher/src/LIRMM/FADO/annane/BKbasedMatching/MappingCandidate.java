@@ -7,17 +7,14 @@ public class MappingCandidate {
 	Double MaxAvg;
 	Double MaxMult;
 	String res;
-	String relation;
 	
-
-	
-	public MappingCandidate(int numberPath,int pathLengthMin,Double avgMax, Double MaxMult, String relation) {
+	public MappingCandidate(int numberPath,int pathLengthMin,Double avgMax, Double MaxMult, String res) {
 		// TODO Auto-generated constructor stub
 		this.pathNumber=numberPath;
 		this.minPathLength=pathLengthMin;
 		this.MaxAvg=avgMax;
 		this.MaxMult=MaxMult;
-		this.relation=relation;
+		this.res=res;
 	}
 
 }

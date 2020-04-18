@@ -18,9 +18,9 @@ public class FinalMappingSelection {
 	
 	/**
 	 * This method selects the final mappings from the set of candidate mappings
-	 * @param threshold: the min value that may have a selected mapping
-	 * @return selected mappings in TreeSet format
-	 * @throws NumberFormatException Scores are casted into double type which may rise this exception
+	 * @param threshold: la valeur minmale accepté pour un mapping candidat
+	 * @return la liste des mappings sélectionnés sous fomre d'un TreeSet
+	 * @throws NumberFormatException les scores sont parsés ont Double ce qui peut générer cette exception
 	 * @throws IOException l'ensemble des mappings candidats sont dans un fichier path, l'ouverture de ce fichier peut générer cette exception
 	 */
 	public FinalMappingSelection() {
@@ -31,9 +31,9 @@ public class FinalMappingSelection {
 	{
 		TreeSet<String> finalMappings=new TreeSet<>();
 		long debut =System.currentTimeMillis();
-		File chemins=new File(Parameters.derivedCheminsPath);
+		File chemins=new File(C.derivedCheminsPath);
 		if(chemins.exists())
-		{BufferedReader reader = new BufferedReader(new FileReader(Parameters.derivedCheminsPath)); 
+		{BufferedReader reader = new BufferedReader(new FileReader(C.derivedCheminsPath)); 
 		String line = null; 
 		String value = null; 
 	    int cpt=0;
@@ -57,7 +57,7 @@ public class FinalMappingSelection {
 				 String m=lineParser.nextToken();
 				 if(!m.equals(""))
 				 {
-				    StringTokenizer details = new StringTokenizer(m, Parameters.separator);
+				    StringTokenizer details = new StringTokenizer(m, C.separator);
 					score=Double.parseDouble(details.nextToken());
 					if(score==2.0)score=1.0;
 					if(score==3.0){score=1.0;subclass=true;}
@@ -130,7 +130,7 @@ public class FinalMappingSelection {
 			}
 			
 		}
-		TreeSet<String> a = selection2(Parameters.derivedCheminsPath, threshold);
+		TreeSet<String> a = selection2(C.derivedCheminsPath, threshold);
 		for (String m : a) {
 			StringTokenizer lineParser = new StringTokenizer(m, ",");
 			String uri2=lineParser.nextToken();
@@ -140,7 +140,7 @@ public class FinalMappingSelection {
 			finalMappings.add(uri1+','+uri2+','+score);	
 		}
 		long time=System.currentTimeMillis()-debut;
-		}
+		C.executionTime.add("selection "+(time)+"ms");}
 		else System.out.println("The derivation result is empty");
 		return finalMappings;
 	}
@@ -171,7 +171,7 @@ public class FinalMappingSelection {
 				 String m=lineParser.nextToken();
 				 if(!m.equals(""))
 				 {
-				    StringTokenizer details = new StringTokenizer(m, Parameters.separator);
+				    StringTokenizer details = new StringTokenizer(m, C.separator);
 					score=Double.parseDouble(details.nextToken());
 					if(score==2.0)score=1.0;
 				 }
@@ -236,7 +236,7 @@ public class FinalMappingSelection {
 			
 		}
 		long time=System.currentTimeMillis()-debut;
-
+		C.executionTime.add("selection "+(time)+"ms");
 		return finalMappings;
 	}
 

@@ -20,17 +20,25 @@ import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.vocabulary.OWL;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.apache.jena.vocabulary.OWL;
 
 
 public class JenaMethods 
 {
 	public static QueryExecution qexec;
 	
+	public static void main(String[] args) throws Exception
+	{
+		//File f=new File(C.ordo);
+		//System.out.println(getOntologyUri(f.toURI().toURL()));
+		String path = "file:///C:/Users/aannane/Desktop/workspace/GBKOM/BKontologies/DOID.owl";
+		JenaMethods.LoadOntologyModelWithJena(path);
 
+		//retiredConcepts();
+	}
 	
 	
 	public static String getOntologyUri(Model model)
@@ -57,7 +65,7 @@ public class JenaMethods
 	public static TreeSet<String> loadOntologyElementsForSelection(Model ontology,String sourceIRI) throws Exception
 	{
 		TreeSet<String> ontologyUriCode = new TreeSet<String>();
-		ResultSet res=ExecuteQuery(Parameters.prefix+"select ?x where {?x a owl:Class}", ontology);
+		ResultSet res=ExecuteQuery(C.prefix+"select ?x where {?x a owl:Class}", ontology);
 		String uri;
 		while (res.hasNext()) 
 		{
@@ -65,7 +73,7 @@ public class JenaMethods
 
             if(uri.toLowerCase().contains(sourceIRI.toLowerCase()))
             	{
-            		ontologyUriCode.add(sourceIRI+Parameters.separator+uri);
+            		ontologyUriCode.add(sourceIRI+C.separator+uri);
             	}
 		}		
 		return ontologyUriCode;
@@ -76,16 +84,16 @@ public class JenaMethods
 	public static TreeSet<String> loadOntologyCodes(Model ontology,String sourceIRI, boolean obo) throws Exception
 	{
 		TreeSet<String> ontologyUriCode = new TreeSet<String>();
-		ResultSet res=ExecuteQuery(Parameters.prefix+"select ?x where {?x a owl:Class}", ontology);
+		ResultSet res=ExecuteQuery(C.prefix+"select ?x where {?x a owl:Class}", ontology);
 		String uri;
 		while (res.hasNext()) 
 		{
             uri=res.next().get("x").toString();
             String code=Fichier.getUriCode(uri);
-            if(BKbuilding.codeInterface.containsKey(sourceIRI+Parameters.separator+code))
+            if(BKbuilding.codeInterface.containsKey(sourceIRI+C.separator+code))
             	{
-            	String ontologyCode=BKbuilding.codeInterface.get(sourceIRI+Parameters.separator+code);
-            	StringTokenizer s=new StringTokenizer(ontologyCode,Parameters.separator);
+            	String ontologyCode=BKbuilding.codeInterface.get(sourceIRI+C.separator+code);
+            	StringTokenizer s=new StringTokenizer(ontologyCode,C.separator);
             	s.nextToken();
             	ontologyUriCode.add(s.nextToken());
             	}
@@ -105,9 +113,27 @@ public class JenaMethods
 		TreeSet<String> ontologyUriCode = new TreeSet<String>();
 		for (String uri : Uris) 
 		{
-       		ontologyUriCode.add(sourceIRI+Parameters.separator+uri);  	
+       		ontologyUriCode.add(sourceIRI+C.separator+uri);  	
 		}		
 		return ontologyUriCode;
+	}
+/* ************************************************************* */	
+	public static ArrayList<String> retiredConcepts()
+	{
+		ArrayList<String> a = new ArrayList<String>();
+		Model nci=LoadOntologyModelWithJena(C.t2_nci);
+		String query=C.prefix+"select distinct ?x where {?x  rdfs:subClassOf <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Retired_Concepts>}";
+		ResultSet res = ExecuteQuery(query, nci);
+		while(res.hasNext())
+		{
+			QuerySolution sol = res.next();
+			String uri=sol.get("x").toString();
+			String id=uri.substring(uri.indexOf("#")+1);
+			a.add(id);
+			//System.out.println(id);
+			
+		}
+		return a;
 	}
 	
 	/* ************************************************************** */
@@ -196,7 +222,7 @@ public class JenaMethods
 	public static TreeSet<String> loadOntologyUri(Model ontology)
 	{
 		TreeSet<String> ontologyUri = new TreeSet<String>();
-		ResultSet res=ExecuteQuery(Parameters.prefix+"select ?x where {?x a owl:Class}", ontology);
+		ResultSet res=ExecuteQuery(C.prefix+"select ?x where {?x a owl:Class}", ontology);
 		String uri;
 		while (res.hasNext()) 
 		{
@@ -214,7 +240,7 @@ public class JenaMethods
 
 		for (String uri : list) {
 
-			String query = Parameters.prefix
+			String query = C.prefix
 					+ "select distinct ?y  where" + "{{ ?y rdfs:subClassOf <" + uri + "> . } " + // children-
 					"UNION { ?y rdfs:subClassOf ?z . ?z  rdfs:subClassOf <" + uri + "> .}" + // children
 																								// of

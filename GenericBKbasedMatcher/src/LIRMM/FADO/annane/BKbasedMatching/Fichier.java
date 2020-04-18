@@ -28,29 +28,22 @@ import fr.inrialpes.exmo.align.parser.AlignmentParser;
 
 
 
-public class Fichier extends File {
+public class Fichier {
 	
 	
 	
-	 public Fichier(String pathname) {
-		super(pathname);
-		path = pathname;
-		// TODO Auto-generated constructor stub
-	}
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	static String retourAlaLigne="\r\n";
+	 static String retourAlaLigne="\r\n";
 	 public String path;
-
+	 public Fichier(String path){
+		 this.path=path;
+	 }
 	 
 	 
 	 
 	 
 		//*********************************************************************************************
 		public static void main(String[] args) throws Exception {
-			loadOAEIAlignment("C:\\Users\\annane\\workspace\\VLSOM\\res.rdf");
+			loadOAEIAlignment("E:\\Amina documents\\MyDocuments YAM-BIO\\workspace\\GBKOM\\ProcessingFolder\\Result\\res.rdf");
 			//loadReferenceAlignment("C:\\Users\\annane\\Google Drive\\.1.Extension\\OAEI2016\\LargeBio\\with repairs\\oaei_FMA2NCI_UMLS_mappings_with_flagged_repairs.rdf");
 		}
 		
@@ -91,7 +84,28 @@ public class Fichier extends File {
 			   
 			   return code.replace(",", "_");
 		   }
-	 
+	    /**
+	     * if it exists return the file, otherwise create it and return the file */
+		 public static File returnFolder (String path) {
+			 File file=new File(path);
+				if(file.exists())
+				{
+					return file;
+				}
+				else
+				{
+					 boolean bool = file.mkdir();
+				      if(bool){
+				    	  return file;
+				      }
+				      else 
+				    	  {
+				    	    new Exception("The system could not create the folder: "+path).printStackTrace();
+				    	    return null;
+				    	  }
+				}
+		 }
+		 
 	 
 		/* **************** delete files ********************* */
 		public  void deleteFile()
@@ -465,28 +479,6 @@ public class Fichier extends File {
 			}
 	return null;
 		}//ecrire
-// *********************************************************************
-    /**
-     * if it exists return the file, otherwise create it and return the file */
-	 public static File returnFolder (String path) {
-		 File file=new File(path);
-			if(file.exists())
-			{
-				return file;
-			}
-			else
-			{
-				 boolean bool = file.mkdir();
-			      if(bool){
-			    	  return file;
-			      }
-			      else 
-			    	  {
-			    	    new Exception("The system could not create the folder: "+path).printStackTrace();
-			    	    return null;
-			    	  }
-			}
-	 }
 //***********************************************************************
 	public  void ecrire ( String chemin, String text)
 	{
