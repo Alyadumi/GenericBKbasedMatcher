@@ -2,6 +2,7 @@ package LIRMM.FADO.annane.BKbasedMatching;
 
 
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 
 import org.neo4j.driver.v1.AuthTokens;
@@ -9,31 +10,77 @@ import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.GraphDatabase;
 import org.neo4j.driver.v1.Session;
 
+import OAEI2017.MatcherBridge;
+
 
 
 
 public class C {
 	
-	public  static Driver driver = GraphDatabase.driver( "bolt://localhost:7687", AuthTokens.basic("neo4j", "aminaamina")  );
-	public static Session session=null;//driver.session();
-	public static String separatorBkAlignmentFiles="___";
-	public static String separator="¤";
-	public static String BkOntologiesFolderPath="BKontologies"+File.separator;
-	public static String BkAlignmentsFolderPath="ProcessingFolder/BKalignments"+File.separator;
-	public static String alignmentsRepositoryFolderPath="alignmentsRepository"+File.separator;
+	/**
+	 * External parameters
+	 */
+	public static URL 		sourceOntology;
+	public static URL 		targetOntology;
+    public static String   BKontologiesFolderPath="GenericBKbasedMatcher/BK"+File.separator+"BKontologies"+File.separator;
+	public static String   ExistingMappingsPath="GenericBKbasedMatcher/BK"+File.separator+"ExistingMappings"+File.separator+"obo.csv";
+	public final static String   alignmentsRepositoryFolderPath="alignmentsRepository"+File.separator;
+	public static MatcherBridge matcher;
+	public static String matcher_name;
+	public static boolean semantic_verification = false;
+		
+    public static boolean  BKselectionInternalExploration = false;
 
-	public static String BkFolderPath="ProcessingFolder/BK"+File.separator;
-	public static String oboFilePath=alignmentsRepositoryFolderPath+"obo.csv";
-	public static String directAlignmentFolderPath="ProcessingFolder/directAlignments"+File.separator;
-	public static String derivationResultFolderPath="ProcessingFolder/derivationResult"+File.separator;
-	public static String derivedCheminsPath=derivationResultFolderPath+File.separator+"chemins.csv";
-	public static ArrayList<String> executionTime = new ArrayList<>();
-	public static String BuiltBkPath=BkFolderPath+File.separator+"BK.owl";
-	public static  String ResultFolderPath= "ProcessingFolder/Result"+File.separator;
+	public static int BKselectionExplorationLength = 4;
 	
+    public static  int     derivationStrategy;
+    public static  int     derivationMaxPathLength;
+    
+    public static  int     mappingSelectionStrategy;
+	public static double   mappingSelectionThreshold=0.0;
+    public static String   dataSetsFolderPath="BK"+File.separator+"DataSets"+File.separator;
+    
+    
+	
+	/**
+	 * Internal parameters
+	 */
+    public final static String matcherName="yam++";
+    public final static String BkAlignmentsFolderPath="ProcessingFolder/BKalignments"+File.separator;
+	public final static String ResultFolderPath= "ProcessingFolder/Result"+File.separator;
+	public final static String BkFolderPath="ProcessingFolder/BK"+File.separator;
+	public final static String BuiltBkPath=BkFolderPath+File.separator+"BK.owl";
+	public  static String oboFilePath=alignmentsRepositoryFolderPath+"obo.csv";
+	public final static String directAlignmentFolderPath="ProcessingFolder/directAlignments"+File.separator;
+	public final static String derivationResultFolderPath="ProcessingFolder/derivationResult"+File.separator;
+	public static String derivedCheminsPath=derivationResultFolderPath+File.separator+"chemins.csv";
+	public final static String separator="¤";
+	public static Driver driver;
+	public static Session session;
+	public final static  String prefix = "PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>"
+			+ "prefix skos: <http://www.w3.org/2004/02/skos/core#> "
+			+ "PREFIX oboInOwl:<http://www.geneontology.org/formats/oboInOwl#> "
+			+ "PREFIX owl: <http://www.w3.org/2002/07/owl#> "
+			+ "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
+			+ "PREFIX BIRNLEX:<http://bioontology.org/projects/ontologies/birnlex#> ";
 	public static final String synonyms="oboInOwl:hasExactSynonym|oboInOwl:hasRelatedSynonym|skos:altLabel|<http://purl.bioontology.org/ontology/SYN#synonym>|<http://www.ebi.ac.uk/efo/alternative_term>|<http://purl.obolibrary.org/obo/synonym>|<http://scai.fraunhofer.de/CSEO#Synonym>|BIRNLEX:synonyms";
 	public static final String prefLabs="rdfs:label|skos:prefLabel|BIRNLEX:preferred_label";
-    public static double mappingSelectionPourcentage=0.0;
+	public static String BK_manual_mappings_path = BkFolderPath+"manual_mappings.csv";
+	public static String BK_automatic_mappings_path = BkFolderPath+"automatic_mappings.csv";
+	public static String BK_target_by_classes_path = BkFolderPath+"target_by_classes.csv";
+	public static String BK_target_classes_path = BkFolderPath+"target_classes.csv";
+	public static String neo4j_import_folder="C:\\Users\\aannane\\Documents\\neo4j\\neo4jDatabases\\database-31fe5ea4-7db3-44d5-8638-ecb5f50c6600\\installation-3.5.14\\import\\";
+	
+    
+	
+	public static String separatorBkAlignmentFiles="___";
+
+	public final static String BkOntologiesFolderPath="BKontologies"+File.separator;
+		
+	public static ArrayList<String> executionTime = new ArrayList<>();
+
+	
+    public static double mappingSelectionPourcentage = 0.0;
 	public static  String folder= "C:/Users/annane/workspace/AutomaticBKbasedMatching/Anatomy Alignments/";
 	public static final String resFolder=folder;
 			//"C:/Users/annane/workspace/Matching/EXP_LogMap/BK/BK6/";
@@ -50,12 +97,7 @@ public class C {
 	   public static final String t5_R="E:\\Amina documents\\MyDocuments YAM-BIO\\.1.Extension\\OAEI2016\\LargeBio\\with repairs\\oaei_SNOMED2NCI_UMLS_mappings_with_flagged_repairs.rdf";
 	   public static final String subGraphFolder="C:/Users/annane/workspace/Matching/EXP_LogMap/Global BK with YAM 38/subgraph/";
 	
-		public static final String prefix = "PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>"
-				+ "prefix skos: <http://www.w3.org/2004/02/skos/core#> "
-				+ "PREFIX oboInOwl:<http://www.geneontology.org/formats/oboInOwl#> "
-				+ "PREFIX owl: <http://www.w3.org/2002/07/owl#> "
-				+ "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
-				+ "PREFIX BIRNLEX:<http://bioontology.org/projects/ontologies/birnlex#> ";
+
 
    public static final String t2_fma="E:\\Amina documents\\MyDocuments YAM-BIO\\.1.Extension\\OAEI2016\\LargeBio/T2/FMA.owl";
    public static final String t2_nci="E:\\Amina documents\\MyDocuments YAM-BIO\\.1.Extension\\OAEI2016\\LargeBio/T2/NCI.owl";
@@ -167,9 +209,15 @@ public class C {
 			   
 			   return code;
 		   }
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 
-	}
 
+		   public class derivationStrategies {
+		    	  public static final int neo4j = 1;
+		    	  public static final int specific_algo = 2;
+		    }
+		    
+		    public class mappingSelectionStrategies {
+		  	  public static final int ML_based = 1;
+		  	  public static final int  Rule_based= 2;
+		  }
 }

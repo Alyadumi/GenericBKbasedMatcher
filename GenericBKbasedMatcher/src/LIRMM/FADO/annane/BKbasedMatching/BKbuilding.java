@@ -57,11 +57,6 @@ public class BKbuilding {
 	Map<String, TreeSet<Noeud>> globalGraph=new HashMap<String, TreeSet<Noeud>>();
 	Map<String, TreeSet<Noeud>> BkGraph=new HashMap<String, TreeSet<Noeud>>();
 
-
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
-	}
 	/**
 	 * Constructor
 	 * @throws URISyntaxException 
@@ -83,8 +78,7 @@ public class BKbuilding {
 	 * @throws Exception
 	 */
 	public Map<String, TreeSet<Noeud>> BuildBK() throws Exception
-	{
-		long debut=System.currentTimeMillis();		
+	{	
 		Fichier folder=new Fichier(C.BkAlignmentsFolderPath);
 		folder.deleteFile();
 		generateBkFromOneFolder();
@@ -94,8 +88,8 @@ public class BKbuilding {
 		Model ontologySourceModel=JenaMethods.LoadOntologyModelWithJena(source);
 		selectSubGraph(ontologySourceModel);
 		createOwlFile2();
-		long time=System.currentTimeMillis()-debut;
-		C.executionTime.add("BKbuild "+(time)+"ms");
+		
+
 		return BkGraph;
 	}
 	

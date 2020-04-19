@@ -53,6 +53,9 @@ public class Matching {
 		File f=new File("Result/a.rdf");
 		ComputeFScore(f.toURI().toURL(), C.ma_nci_Ref);
 	}
+	
+	
+	
 	public Matching(URL source, URL target) throws URISyntaxException
 	{
 		this.source=source;
@@ -70,6 +73,7 @@ public class Matching {
 		sourceOntologyURI=JenaMethods.getOntologyUri(this.source);
 		targetOntologyURI=JenaMethods.getOntologyUri(this.target);
 	}
+	
 	public void BkBasedMatching(TreeSet<String> URIs) throws Exception
 	{
 		URL res = null;
@@ -90,50 +94,6 @@ public class Matching {
 	
 	
 	
-	public URL BkBasedMatching(boolean ElcioMappings) throws Exception
-	{
-		URL res=null;
-		
-		A_Matching_Ontologies m=new A_Matching_Ontologies();
-		Fichier f=new Fichier("direct.rdf");
-		f.deleteFile();
-		m.matchOntologies(source, target, "direct.rdf");
-		TreeSet<String> directMappings = Fichier.loadOAEIAlignmentWithoutOntologies("direct.rdf");
-		
-		
-		BKbuilding buildBK=new BKbuilding();
-		buildBK.sourceIRI=sourceOntologyURI;
-		buildBK.source=source;
-		Map<String, TreeSet<Noeud>> builtBk = buildBK.BuildBKobo("C:\\Users\\annane\\Documents\\OP\\obo.txt");
-		System.out.println("The size of the selected BK is: "+builtBk.size() );
-		
-		BKuse useBK=new BKuse(source, target,true);
-		useBK.sourceIRI=sourceOntologyURI;
-		useBK.targetIRI=targetOntologyURI;
-		useBK.target=target;
-		useBK.source=source;
-		useBK.BkOntologiesCodes=buildBK.BkOntologiesCodes;
-		useBK.BKexploitation(builtBk, true);
-		resultAlignment= selection(C.thresholdSelection,true);
-
-		
-		for (String mapping : directMappings) {
-			StringTokenizer s=new StringTokenizer(mapping,",");
-			String uri1=s.nextToken();
-			String uri2=s.nextToken();
-            if(!resultAlignment.contains(uri1+','+uri2+','+1.0))
-            {
-            	resultAlignment.add(mapping);
-            }
-		}
-		
-		String resFile=C.ResultFolderPath+"res.rdf";
-		Fichier fichierResultat=new Fichier(resFile);
-		fichierResultat.deleteFile();
-		URL resIndirect = fichierResultat.ecrire(getOAEIalignmentFormat());
-		
-		return resIndirect;
-	}
 	/**
 	 * This function implement the whole BK based matching
 	 * @return the URL of the file containing the resulted alignment
@@ -145,15 +105,18 @@ public class Matching {
 		BKbuilding buildBK=new BKbuilding();
 		buildBK.sourceIRI=sourceOntologyURI;
 		buildBK.source=source;
+		
+		//BK building or BK selection
 		Map<String, TreeSet<Noeud>> builtBk = buildBK.BuildBK();
 		System.out.println("The size of the selected BK is: "+builtBk.size() );
 		
+		//BK exploitation
 		BKuse useBK=new BKuse(source, target);
 		useBK.sourceIRI=sourceOntologyURI;
 		useBK.targetIRI=targetOntologyURI;
 		useBK.target=target;
 		useBK.source=source;
-		useBK.BkOntologiesCodes=buildBK.BkOntologiesCodes;
+		useBK.BkOntologiesCodes = buildBK.BkOntologiesCodes;
 		useBK.BKexploitation(builtBk);
 		
 		//Final mapping selection
@@ -164,20 +127,21 @@ public class Matching {
 		fichierResultat.deleteFile();
 		res=fichierResultat.ecrire(getOAEIalignmentFormat());
 		
-		LogMapRepair r=new LogMapRepair();
-		
-		Set<MappingObjectStr> repairedMappings = r.useLogMapRepair(source.toString(), target.toString(), resFile);		
-		TreeSet<String> finalAlignment=new TreeSet<String>();
-		resultAlignment.clear();
-		for (MappingObjectStr mappingObjectStr : repairedMappings) {
-		resultAlignment.add(mappingObjectStr.getIRIStrEnt1()+','+mappingObjectStr.getIRIStrEnt2()+','+mappingObjectStr.getConfidence());
+		if(C.semantic_verification)
+		{
+			LogMapRepair r=new LogMapRepair();
+			Set<MappingObjectStr> repairedMappings = r.useLogMapRepair(source.toString(), target.toString(), resFile);		
+			TreeSet<String> finalAlignment=new TreeSet<String>();
+			resultAlignment.clear();
+			for (MappingObjectStr mappingObjectStr : repairedMappings) {
+			resultAlignment.add(mappingObjectStr.getIRIStrEnt1()+','+mappingObjectStr.getIRIStrEnt2()+','+mappingObjectStr.getConfidence());
+			}
+			
+			resFile=C.ResultFolderPath+"res2.rdf";
+			fichierResultat=new Fichier(resFile);
+			fichierResultat.deleteFile();
+			res=fichierResultat.ecrire(getOAEIalignmentFormat());
 		}
-		
-		resFile=C.ResultFolderPath+"res2.rdf";
-		fichierResultat=new Fichier(resFile);
-		fichierResultat.deleteFile();
-		res=fichierResultat.ecrire(getOAEIalignmentFormat());
-		
 		
 		/*resultAlignment=semanticVerification(source.toString(), target.toString(),fichierResultat.path);	
 		resFile=C.ResultFolderPath+"resultat.rdf";
@@ -277,9 +241,7 @@ public class Matching {
 	 */
 	public static String testAll() throws Exception
 	{
-		
-		
-		 Fichier.deleteFile("scenarios");
+		Fichier.deleteFile("scenarios");
 		Fichier summaryResults=new Fichier("sammaryResults.csv");
 		summaryResults.deleteFile();
 		String resPath=null;
@@ -438,7 +400,7 @@ public class Matching {
 		return finalMappings;
 	}
 
-//_________________________________________________________________________________	
+	//_________________________________________________________________________________	
 	public URL matchOntologies()
 	{
 		URL res;
@@ -512,8 +474,8 @@ public class Matching {
 
 	    return alignments;
 	  }
-//***********************************************************************************
-  public  String getOAEIalignmentFormat() throws URISyntaxException {
+    //***********************************************************************************
+    public  String getOAEIalignmentFormat() throws URISyntaxException {
 	    Alignment alignment = this.convertFromTree();
 	    try {
 	      StringWriter swriter = new StringWriter();
@@ -559,6 +521,7 @@ public class Matching {
 		if (f.exists())this.target = f.toURI().toURL();
 		else throw new NotFoundException("ERROR: Le chemin de l'ontologie cible n'est pas bon");
 	}
+
 /**
  * Semantic verification with ALcomo based on Hermit reasoner
  */
@@ -604,6 +567,5 @@ public class Matching {
 				System.out.println("mapping reduced from " + mapping.size() + " to " + extracted.size() + " correspondences");
 	return a;
 	}
-	
 
 }
