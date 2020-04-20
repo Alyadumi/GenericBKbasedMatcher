@@ -23,8 +23,8 @@ import org.semanticweb.owl.align.Alignment;
 import org.semanticweb.owl.align.AlignmentException;
 import org.semanticweb.owl.align.AlignmentVisitor;
 
-import OAEI2017.MatcherBridge;
-import YAM_BIO_Matcher.A_Matching_Ontologies;
+//import OAEI2017.MatcherBridge;
+//import YAM_BIO_Matcher.A_Matching_Ontologies;
 
 
 import de.unima.alcomox.ExtractionProblem;
@@ -33,6 +33,8 @@ import de.unima.alcomox.exceptions.AlcomoException;
 import de.unima.alcomox.mapping.Correspondence;
 import de.unima.alcomox.mapping.Mapping;
 import de.unima.alcomox.ontology.IOntology;
+import eu.sealsproject.platform.res.tool.api.ToolBridgeException;
+import eu.sealsproject.platform.res.tool.api.ToolException;
 import fr.inrialpes.exmo.align.impl.BasicParameters;
 import fr.inrialpes.exmo.align.impl.URIAlignment;
 import fr.inrialpes.exmo.align.impl.renderer.RDFRendererVisitor;
@@ -45,7 +47,6 @@ public class Matching {
 	URL target;
 	String sourceOntologyURI;
 	String targetOntologyURI;
-	MatcherBridge matcher=new MatcherBridge();
 	TreeSet<String> resultAlignment;
 	
 	public static void main(String[] args) throws Exception {
@@ -401,24 +402,24 @@ public class Matching {
 	}
 
 	//_________________________________________________________________________________	
-	public URL matchOntologies()
+	public URL matchOntologies() throws ToolException, ToolBridgeException
 	{
 		URL res;
 		if (source!=null && target!=null)
 			{
-			res=matcher.align(source, target);
+			res= C.matcher.align(source, target);
 			}
 		else throw new NullPointerException("source or target ontology URL is null");
 		return res;
 	}
 	
-	public URL matchOntologies(String resultPath) throws URISyntaxException, IOException
+	public URL matchOntologies(String resultPath) throws URISyntaxException, IOException, ToolException, ToolBridgeException
 	{ 
 		File destFile;
 		URL res;
 		if (source!=null && target!=null)
 			{
-			res=matcher.align(source, target);
+			res= C.matcher.align(source, target);
 			File resFile=new File(res.toURI());
 			destFile=new File(resultPath);
 			//copy to the destination path

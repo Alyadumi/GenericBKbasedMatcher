@@ -10,7 +10,12 @@ import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.GraphDatabase;
 import org.neo4j.driver.v1.Session;
 
-import OAEI2017.MatcherBridge;
+//import uk.ac.ox.krr.logmap_lite.MatcherBridge; //LogMap_lite
+
+//import uk.ac.ox.krr.logmap2.oaei.MatcherBridge; //LogMap
+
+import OAEI2017.MatcherBridge; //YAM++
+
 
 
 
@@ -22,22 +27,26 @@ public class C {
 	 */
 	public static URL 		sourceOntology;
 	public static URL 		targetOntology;
-    public static String   BKontologiesFolderPath="GenericBKbasedMatcher/BK"+File.separator+"BKontologies"+File.separator;
-	public static String   ExistingMappingsPath="GenericBKbasedMatcher/BK"+File.separator+"ExistingMappings"+File.separator+"obo.csv";
-	public final static String   alignmentsRepositoryFolderPath="alignmentsRepository"+File.separator;
-	public static MatcherBridge matcher;
-	public static String matcher_name;
+    public static final String   BKontologiesFolderPath="GenericBKbasedMatcher/BK"+File.separator+"BKontologies"+File.separator;
+	public static final String   ExistingMappingsPath="GenericBKbasedMatcher/BK"+File.separator+"ExistingMappings"+File.separator+"obo.csv";
+	
+	public final static MatcherBridge matcher = new MatcherBridge();
+	public final static String matcher_name = "YAM++";
+	
 	public static boolean semantic_verification = false;
+	
+	public final static String   alignmentsRepositoryFolderPath="alignmentsRepository"+File.separator + matcher_name +File.separator;
+	
 		
     public static boolean  BKselectionInternalExploration = false;
 
-	public static int BKselectionExplorationLength = 4;
+	public static int BKselectionExplorationLength = 1;
 	
     public static  int     derivationStrategy;
     public static  int     derivationMaxPathLength;
     
     public static  int     mappingSelectionStrategy;
-	public static double   mappingSelectionThreshold=0.0;
+	public static double   mappingSelectionThreshold = 0.0;
     public static String   dataSetsFolderPath="BK"+File.separator+"DataSets"+File.separator;
     
     
@@ -45,12 +54,11 @@ public class C {
 	/**
 	 * Internal parameters
 	 */
-    public final static String matcherName="yam++";
+
     public final static String BkAlignmentsFolderPath="ProcessingFolder/BKalignments"+File.separator;
 	public final static String ResultFolderPath= "ProcessingFolder/Result"+File.separator;
 	public final static String BkFolderPath="ProcessingFolder/BK"+File.separator;
 	public final static String BuiltBkPath=BkFolderPath+File.separator+"BK.owl";
-	public  static String oboFilePath=alignmentsRepositoryFolderPath+"obo.csv";
 	public final static String directAlignmentFolderPath="ProcessingFolder/directAlignments"+File.separator;
 	public final static String derivationResultFolderPath="ProcessingFolder/derivationResult"+File.separator;
 	public static String derivedCheminsPath=derivationResultFolderPath+File.separator+"chemins.csv";
@@ -69,7 +77,7 @@ public class C {
 	public static String BK_automatic_mappings_path = BkFolderPath+"automatic_mappings.csv";
 	public static String BK_target_by_classes_path = BkFolderPath+"target_by_classes.csv";
 	public static String BK_target_classes_path = BkFolderPath+"target_classes.csv";
-	public static String neo4j_import_folder="C:\\Users\\aannane\\Documents\\neo4j\\neo4jDatabases\\database-31fe5ea4-7db3-44d5-8638-ecb5f50c6600\\installation-3.5.14\\import\\";
+	public final static String neo4j_import_folder="C:\\Users\\aannane\\Documents\\neo4j\\neo4jDatabases\\database-31fe5ea4-7db3-44d5-8638-ecb5f50c6600\\installation-3.5.14\\import\\";
 	
     
 	

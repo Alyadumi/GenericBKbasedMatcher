@@ -27,6 +27,8 @@ import org.apache.jena.vocabulary.RDFS;
 import org.apache.jena.vocabulary.SKOS;
 import org.semanticweb.owl.align.Alignment;
 
+import eu.sealsproject.platform.res.tool.api.ToolBridgeException;
+import eu.sealsproject.platform.res.tool.api.ToolException;
 import fr.inrialpes.exmo.align.parser.AlignmentParser;
 
 
@@ -84,7 +86,7 @@ public class BKbuilding {
 		generateBkFromOneFolder();
 		matchOntologyToBKontologies();
 		chargerBKMappingsFromFolder();
-		if(C.oboFilePath!=null)chargerBK_Mappings();
+		if(C.ExistingMappingsPath!=null)chargerBK_Mappings();
 		Model ontologySourceModel=JenaMethods.LoadOntologyModelWithJena(source);
 		selectSubGraph(ontologySourceModel);
 		createOwlFile2();
@@ -93,37 +95,7 @@ public class BKbuilding {
 		return BkGraph;
 	}
 	
-	public Map<String, TreeSet<Noeud>> BuildBKobo(String oboMappingFile) throws Exception
-	{
-		long debut=System.currentTimeMillis();		
-		Fichier folder=new Fichier(C.BkAlignmentsFolderPath);
-		folder.deleteFile();
-		 
-		ontologyAcronym=new HashMap<String, String>();
-		ontologyAcronym.put("http://bioontology.org/projects/ontologies/fma/fmaOwlDlComponent_2_0","fma");
-		ontologyAcronym.put("http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl","ncit");
-		ontologyAcronym.put("http://www.ihtsdo.org/snomed","snomedct");
-		ontologyAcronym.put("http://human.owl","ncit");
-		ontologyAcronym.put("http://mouse.owl","ma");
-		
-		if(ontologyAcronym.containsKey(sourceIRI))
-			{
-				sourceAcronym=ontologyAcronym.get(sourceIRI);
-				loadConcepts("C:\\Users\\annane\\Desktop\\concepts\\concepts\\",sourceAcronym);//load the interface
-				if(!sourceIRI.equals("http://mouse.owl")&&!sourceIRI.equals("http://human.owl"))sourceNeedInterface=true;
-			}
-		else {
-             sourceAcronym=getAcronym(sourceIRI);
-			}
-	  
-		C.oboFilePath=oboMappingFile;
-		if(C.oboFilePath!=null)chargerBK_Mappings();
-		Model ontologySourceModel=JenaMethods.LoadOntologyModelWithJena(source);
-		selectSubGraph(ontologySourceModel,true);
-		long time=System.currentTimeMillis()-debut;
-		C.executionTime.add("BKbuild "+(time)+"ms");
-		return BkGraph;
-	}
+	
 	
 	static String getAcronym(String IRI)
 	{
@@ -144,7 +116,7 @@ public class BKbuilding {
 	{
 		long debut=System.currentTimeMillis();	
 		chargerBKMappingsFromFolder();
-		if(C.oboFilePath!=null)chargerBK_Mappings();
+		if(C.ExistingMappingsPath!=null)chargerBK_Mappings();
 		selectSubGraph(URIs);
 		enrichWithChildrenAndFathers();
 		createOwlFile2();
@@ -553,7 +525,7 @@ public class BKbuilding {
 	{
 		long debut =System.currentTimeMillis();
 		String uri_source,ontologySource, uri_target,ontologyTarget,score;
-		File f = new File(C.oboFilePath); 
+		File f = new File(C.ExistingMappingsPath); 
 		//rendre cette partie automatique pour tous les fichiers RDF et CSV existants
 		BufferedReader reader = new BufferedReader(new FileReader(f)); 
 		String line = null; 
@@ -661,8 +633,10 @@ public class BKbuilding {
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 * @throws URISyntaxException
+	 * @throws ToolBridgeException 
+	 * @throws ToolException 
 	 */
-	    void matchOntologyToBKontologies() throws FileNotFoundException, IOException, URISyntaxException
+	    void matchOntologyToBKontologies() throws FileNotFoundException, IOException, URISyntaxException, ToolException, ToolBridgeException
 	   {  
 		  for(int j=0;j<BkOntologies.length;j++)
 		  { 
@@ -690,8 +664,10 @@ public class BKbuilding {
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 * @throws URISyntaxException
+	 * @throws ToolBridgeException 
+	 * @throws ToolException 
 	 */
-	 void generateBkFromOneFolder() throws FileNotFoundException, IOException, URISyntaxException
+	 void generateBkFromOneFolder() throws FileNotFoundException, IOException, URISyntaxException, ToolException, ToolBridgeException
 	{	  
 		  for(int i=0;i<BkOntologies.length;i++)
 		  { 
@@ -713,8 +689,10 @@ public class BKbuilding {
 	 * @param targetIRI The target IRI
 	 * @throws IOException
 	 * @throws URISyntaxException
+	 * @throws ToolBridgeException 
+	 * @throws ToolException 
 	 */
-	void generateBKalignment(URL source,URL target, String sourceIRI, String targetIRI) throws IOException, URISyntaxException
+	void generateBKalignment(URL source,URL target, String sourceIRI, String targetIRI) throws IOException, URISyntaxException, ToolException, ToolBridgeException
 	{
 		if(ExistingAlignments.containsKey(sourceIRI+C.separator+targetIRI))
 		{

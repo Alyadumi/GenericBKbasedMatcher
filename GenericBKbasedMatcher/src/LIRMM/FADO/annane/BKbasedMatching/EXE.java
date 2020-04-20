@@ -5,19 +5,18 @@ import java.net.URL;
 import org.neo4j.driver.v1.AuthTokens;
 import org.neo4j.driver.v1.GraphDatabase;
 import LIRMM.FADO.annane.BKbasedMatching.C.derivationStrategies;
-import OAEI2017.MatcherBridge;
+
+
+
 
 public class EXE {
 
 	public static void main(String[] args) throws Exception {
 		
 		//set up external parameters
-		
-		C.matcher_name = "YAM++";
-		C.matcher = new MatcherBridge();
-		
+			
 		C.derivationMaxPathLength = 4;
-		C.derivationStrategy = derivationStrategies.neo4j;
+		C.derivationStrategy = derivationStrategies.specific_algo;
 		if(C.derivationStrategy == derivationStrategies.neo4j)
 		{
 			String data_base_name = "neo4j";
@@ -25,7 +24,7 @@ public class EXE {
 			C.driver = GraphDatabase.driver( "bolt://localhost:7687", AuthTokens.basic(data_base_name, password )  );
 			C.session= C.driver.session();
 		}
-		C.semantic_verification = false;
+		C.semantic_verification = true;
 		
 		C.BKselectionInternalExploration = false ;
 		
