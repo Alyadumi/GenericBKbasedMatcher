@@ -28,13 +28,15 @@ import fr.inrialpes.exmo.align.parser.AlignmentParser;
 
 
 
-public class Fichier {
+public class Fichier extends File {
 	
 	
 	
 	 static String retourAlaLigne="\r\n";
 	 public String path;
+	 
 	 public Fichier(String path){
+		 super(path);
 		 this.path=path;
 	 }
 	 

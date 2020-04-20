@@ -29,16 +29,6 @@ public class EXE {
 		C.BKselectionInternalExploration = false ;
 		
 
-		
-		// create if they don't exist folders that are required for the execution 
-		Fichier.returnFolder("ProcessingFolder");
-		Fichier.returnFolder(C.BkAlignmentsFolderPath);
-		Fichier.returnFolder(C.BkFolderPath);
-		Fichier.returnFolder(C.derivationResultFolderPath);
-		Fichier.returnFolder(C.ResultFolderPath);
-		Fichier.returnFolder(C.directAlignmentFolderPath);
-		Fichier.returnFolder(C.alignmentsRepositoryFolderPath);
-		
 		//load source and target ontologies
 		File sourceOntologyFile=new File(C.mouse);//source ontology
 		File targetOntologyFile=new File(C.human);//target ontology

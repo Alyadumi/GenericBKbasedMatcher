@@ -12,9 +12,9 @@ import org.neo4j.driver.v1.Session;
 
 //import uk.ac.ox.krr.logmap_lite.MatcherBridge; //LogMap_lite
 
-//import uk.ac.ox.krr.logmap2.oaei.MatcherBridge; //LogMap
+import uk.ac.ox.krr.logmap2.oaei.MatcherBridge; //LogMap
 
-import OAEI2017.MatcherBridge; //YAM++
+//import OAEI2017.MatcherBridge; //YAM++
 
 
 
@@ -31,7 +31,7 @@ public class C {
 	public static final String   ExistingMappingsPath="GenericBKbasedMatcher/BK"+File.separator+"ExistingMappings"+File.separator+"obo.csv";
 	
 	public final static MatcherBridge matcher = new MatcherBridge();
-	public final static String matcher_name = "YAM++";
+	public final static String matcher_name = "LogMap";
 	
 	public static boolean semantic_verification = false;
 	
@@ -42,8 +42,8 @@ public class C {
 
 	public static int BKselectionExplorationLength = 1;
 	
-    public static  int     derivationStrategy;
-    public static  int     derivationMaxPathLength;
+    public static  int     derivationStrategy = derivationStrategies.specific_algo;
+    public static  int     derivationMaxPathLength = 4;
     
     public static  int     mappingSelectionStrategy;
 	public static double   mappingSelectionThreshold = 0.0;
@@ -54,7 +54,7 @@ public class C {
 	/**
 	 * Internal parameters
 	 */
-
+    public final static String MLselectionDatasetsFolderPath = "ML_selection/ML_datasets"+File.separator;
     public final static String BkAlignmentsFolderPath="ProcessingFolder/BKalignments"+File.separator;
 	public final static String ResultFolderPath= "ProcessingFolder/Result"+File.separator;
 	public final static String BkFolderPath="ProcessingFolder/BK"+File.separator;
@@ -107,6 +107,15 @@ public class C {
 	
 
 
+
+   
+   public static final String t1_fma="E:\\Amina documents\\MyDocuments YAM-BIO\\.1.Extension\\OAEI2016\\LargeBio\\T1\\FMA.owl";
+   public static final String t1_nci="E:\\Amina documents\\MyDocuments YAM-BIO\\.1.Extension\\OAEI2016\\LargeBio\\T1\\NCI.owl";
+   public static final String t3_fma="E:\\Amina documents\\MyDocuments YAM-BIO\\.1.Extension\\OAEI2016\\LargeBio/T3/FMA.owl";
+   public static final String t3_snomed="E:\\Amina documents\\MyDocuments YAM-BIO\\.1.Extension\\OAEI2016\\LargeBio/T3/SNOMED.owl";
+   public static final String t5_nci="E:\\Amina documents\\MyDocuments YAM-BIO\\.1.Extension\\OAEI2016\\LargeBio/T5/NCI.owl";
+   public static final String t5_snomed="E:\\Amina documents\\MyDocuments YAM-BIO\\.1.Extension\\OAEI2016\\LargeBio/T5/SNOMED.owl";
+
    public static final String t2_fma="E:\\Amina documents\\MyDocuments YAM-BIO\\.1.Extension\\OAEI2016\\LargeBio/T2/FMA.owl";
    public static final String t2_nci="E:\\Amina documents\\MyDocuments YAM-BIO\\.1.Extension\\OAEI2016\\LargeBio/T2/NCI.owl";
    public static final String t4_fma="E:\\Amina documents\\MyDocuments YAM-BIO\\.1.Extension\\OAEI2016\\LargeBio/T4/FMA.owl";
@@ -114,23 +123,6 @@ public class C {
    public static final String t6_snomed="E:\\Amina documents\\MyDocuments YAM-BIO\\.1.Extension\\OAEI2016\\LargeBio/T6/SNOMED.owl";
    public static final String t6_nci="E:\\Amina documents\\MyDocuments YAM-BIO\\.1.Extension\\OAEI2016\\LargeBio/T6/NCI.owl";
    
-   
-   public static final String HP="C:\\Users\\annane\\Google Drive\\theseAmina\\Mes travaux\\5.OAEI2017\\Phenotype_ontologies\\hp.owl";
-   public static final String MP="C:\\Users\\annane\\Google Drive\\theseAmina\\Mes travaux\\5.OAEI2017\\Phenotype_ontologies\\mp.owl";
-   public static final String doid="C:\\Users\\annane\\Google Drive\\theseAmina\\Mes travaux\\5.OAEI2017\\Phenotype_ontologies\\doid.owl";
-   public static final String ordo="C:\\Users\\annane\\Google Drive\\theseAmina\\Mes travaux\\5.OAEI2017\\Phenotype_ontologies\\ordo.owl";
-   
-   public static final String MESH="C:\\Users\\annane\\Google Drive\\theseAmina\\Mes travaux\\5.OAEI2017\\Phenotype_ontologies\\mesh.owl";
-   public static final String omim="C:\\Users\\annane\\Google Drive\\theseAmina\\Mes travaux\\5.OAEI2017\\Phenotype_ontologies\\omim.owl";
-   public static final String R_hp_omim="C:\\Users\\annane\\Google Drive\\theseAmina\\Mes travaux\\5.OAEI2017\\Phenotype_ontologies\\HP-OMIM\\HP_OMIM.owl";
-	 public static final String R_hp_mp="C:\\Users\\annane\\Google Drive\\theseAmina\\Mes travaux\\5.OAEI2017\\Phenotype_ontologies\\HP-MP\\HP_MP.owl"; 
-	public static final String t1_fma="E:\\Amina documents\\MyDocuments YAM-BIO\\.1.Extension\\OAEI2016\\LargeBio\\T1\\FMA.owl";
-   public static final String t1_nci="E:\\Amina documents\\MyDocuments YAM-BIO\\.1.Extension\\OAEI2016\\LargeBio\\T1\\NCI.owl";
-   public static final String t3_fma="E:\\Amina documents\\MyDocuments YAM-BIO\\.1.Extension\\OAEI2016\\LargeBio/T3/FMA.owl";
-   public static final String t3_snomed="E:\\Amina documents\\MyDocuments YAM-BIO\\.1.Extension\\OAEI2016\\LargeBio/T3/SNOMED.owl";
-   public static final String t5_nci="E:\\Amina documents\\MyDocuments YAM-BIO\\.1.Extension\\OAEI2016\\LargeBio/T5/NCI.owl";
-   public static final String t5_snomed="E:\\Amina documents\\MyDocuments YAM-BIO\\.1.Extension\\OAEI2016\\LargeBio/T5/SNOMED.owl";
-
 
    public static final String BKfolder="C:/Users/annane/Google Drive/.1.Extension/BK ontologies/";
    

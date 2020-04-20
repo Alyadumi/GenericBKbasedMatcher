@@ -59,6 +59,14 @@ public class Matching {
 	
 	public Matching(URL source, URL target) throws URISyntaxException
 	{
+		Fichier.returnFolder("ProcessingFolder");
+		Fichier.returnFolder(C.BkAlignmentsFolderPath);
+		Fichier.returnFolder(C.BkFolderPath);
+		Fichier.returnFolder(C.derivationResultFolderPath);
+		Fichier.returnFolder(C.ResultFolderPath);
+		Fichier.returnFolder(C.directAlignmentFolderPath);
+		Fichier.returnFolder(C.alignmentsRepositoryFolderPath);
+		
 		this.source=source;
 		this.target=target;
 		sourceOntologyURI=JenaMethods.getOntologyUri(source);
@@ -67,6 +75,15 @@ public class Matching {
 	
 	public Matching(String source, String target) throws URISyntaxException, MalformedURLException
 	{
+		Fichier.returnFolder("ProcessingFolder");
+		Fichier.returnFolder(C.BkAlignmentsFolderPath);
+		Fichier.returnFolder(C.BkFolderPath);
+		Fichier.returnFolder(C.derivationResultFolderPath);
+		Fichier.returnFolder(C.ResultFolderPath);
+		Fichier.returnFolder(C.directAlignmentFolderPath);
+		Fichier.returnFolder(C.alignmentsRepositoryFolderPath);
+		
+		
 		File sourceFile=new File(source);
 		File targetFile=new File(target);
 		this.source=sourceFile.toURI().toURL();
@@ -151,6 +168,30 @@ public class Matching {
 		res=fichierResultat.ecrire(getOAEIalignmentFormat());*/
 		return res;
 	}
+	/**
+	 * 
+	 */
+	public String returnCandidateMappings() throws Exception
+	{
+		URL res=null;
+		BKbuilding buildBK=new BKbuilding();
+		buildBK.sourceIRI=sourceOntologyURI;
+		buildBK.source=source;
+		
+		//BK building or BK selection
+		Map<String, TreeSet<Noeud>> builtBk = buildBK.BuildBK();
+		System.out.println("The size of the selected BK is: "+builtBk.size() );
+		
+		//BK exploitation
+		BKuse useBK=new BKuse(source, target);
+		useBK.sourceIRI=sourceOntologyURI;
+		useBK.targetIRI=targetOntologyURI;
+		useBK.target=target;
+		useBK.source=source;
+		useBK.BkOntologiesCodes = buildBK.BkOntologiesCodes;
+		useBK.BKexploitation(builtBk);
+		return C.derivedCheminsPath;
+		}
 	
 	/**
 	 * tester les performances du matcher sans BK
