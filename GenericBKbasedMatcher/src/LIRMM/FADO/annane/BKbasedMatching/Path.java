@@ -22,6 +22,7 @@ public class Path {
 	ArrayList<Noeud>  nodes = new ArrayList<>();
 	ArrayList<String> relations = new ArrayList<>();
 	ArrayList<String> origin = new ArrayList<>(); //manual or automatic
+	int number_manual_mapping = 0;
 	
 	
 	public Path(String derived_path)
@@ -106,6 +107,16 @@ public class Path {
 		}
 		return res;
 	}
+	
+	public int AvgManualMappings()
+	{
+		int res = 0;
+		for(double s:scores)
+		{
+			if(res == 2.0) res++;
+		}
+		return res/(length-1);
+	}
 
 	public double varScores()
 	{
@@ -118,7 +129,7 @@ public class Path {
 		return y/(length-1);
 	}
 	
-	public double avgPerVar() {
+	public double avgPerVarScores() {
 		double avg = avgScores();
 		double var = varScores();
 		return avg/var;
