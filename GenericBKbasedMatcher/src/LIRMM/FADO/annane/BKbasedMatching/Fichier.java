@@ -243,8 +243,13 @@ public class Fichier extends File {
 		
 			return m;
 		}
-	// ***************************************charger l'alignement de r�f�rence*******************
-			public static TreeSet<String> loadReferenceAlignment(String referencePath) throws AlignmentException
+	/**
+	 * loadReferenceAlignment: reference alignment provided by the OAEI competition, this function should be updated according the format of the reference alignment file
+	 * @param referencePath: path of the reference alignment file
+	 * @return the set of correct mappings, those with = relationship
+	 * @throws AlignmentException
+	 */
+	public static TreeSet<String> loadReferenceAlignment(String referencePath) throws AlignmentException
 			{
 				TreeSet<String> m =new TreeSet<>();
 				  AlignmentParser aparser = new AlignmentParser(0);
@@ -258,7 +263,6 @@ public class Fichier extends File {
 	                  { 
 	                	  m.add(uri_source+','+uri_target);
 	                  }
-
 				}
 			
 				return m;
@@ -314,7 +318,7 @@ public class Fichier extends File {
 			} 
 			return mappings;
 			} 
-		//****************************************************************************
+	//****************************************************************************
 			public static TreeSet<String> parseConcepts(String path) throws FileNotFoundException, IOException { 
 				File csvFile = new File(path); 
 				TreeSet<String> concepts=new TreeSet<>();

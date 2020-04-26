@@ -171,7 +171,7 @@ public class Matching {
 	/**
 	 * 
 	 */
-	public String returnCandidateMappings() throws Exception
+	public String generateCandidateMappings() throws Exception
 	{
 		URL res=null;
 		BKbuilding buildBK=new BKbuilding();

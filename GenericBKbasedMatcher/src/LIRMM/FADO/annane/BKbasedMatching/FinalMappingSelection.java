@@ -3,6 +3,7 @@ package LIRMM.FADO.annane.BKbasedMatching;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,6 +12,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
@@ -19,12 +21,15 @@ import weka.classifiers.trees.RandomForest;
 import weka.core.Instances;
 
 public class FinalMappingSelection {
+	
+	String derived_paths_path;
+	HashMap<String, List<Path>> mapping_candidates_paths;
 
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
 		// create if they don't exist folders that are required for the execution 
-		
-		FinalMappingSelection.generateTrainingSet();
+		FinalMappingSelection fms = new FinalMappingSelection();
+		fms.generateTrainingSet();
 
 	}
 	
@@ -273,7 +278,7 @@ public class FinalMappingSelection {
 	  * generate the training set
 	 * @throws Exception 
 	  */
-	public static void generateTrainingSet() throws Exception
+	public  void generateTrainingSet() throws Exception
 	{
 		Fichier datasetFolder = new Fichier(C.MLselectionDatasetsFolderPath);
 		if(datasetFolder != null && datasetFolder.exists())
@@ -296,7 +301,10 @@ public class FinalMappingSelection {
 					C.sourceOntology = source_ontology_URL;
 					C.targetOntology = target_ontology_URL;
 					Matching matching = new Matching(C.sourceOntology, C.targetOntology);
-					matching.returnCandidateMappings();
+					this.derived_paths_path = matching.generateCandidateMappings();
+					this.extractMappingCandidatePaths();
+					
+					
 					//annotate the candidate mappings with the reference alignments
 					//generate the arff file
 					
@@ -308,7 +316,27 @@ public class FinalMappingSelection {
 		
 		//merge all the arff files to have the training set
 	}
-	  /* public static  TreeSet<String> testWekaWithJava(String learn, String test,String indexInstancesPath) throws Exception
+    
+	public void extractMappingCandidatePaths() throws IOException {
+		
+		BufferedReader reader = new BufferedReader(new FileReader(this.derived_paths_path)); 
+	 	String line = null ;
+	 	mapping_candidates_paths = new HashMap<>();
+	 	while ((line = reader.readLine()) != null) 
+	 	{
+	 		Path p = new Path(line);
+	 		String key = p.source_concept_uri+C.separator+p.target_concept_uri;
+	 		if(!mapping_candidates_paths.keySet().contains(key))
+	 		{
+	 			ArrayList<Path> l = new ArrayList<>();
+	 			mapping_candidates_paths.put(key, l);
+	 		}
+	 		mapping_candidates_paths.get(key).add(p);	
+	 	}
+	}
+	
+	
+	/* public static  TreeSet<String> testWekaWithJava(String learn, String test,String indexInstancesPath) throws Exception
 	   {
 		   System.out.println("ML based final mapping selection");
 		  // String folder="C://Users//annane//Desktop//today3//";
