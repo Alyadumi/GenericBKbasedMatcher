@@ -236,7 +236,7 @@ public class Fichier extends File {
 		    	  String relation = cell.getRelation().getRelation();
                   if(relation.equals("?"))
                   { 
-                	  m.add(uri_source+','+uri_target);
+                	  m.add(uri_source+C.separator+uri_target);
                   }
 
 			}
@@ -261,7 +261,7 @@ public class Fichier extends File {
 			    	  String relation = cell.getRelation().getRelation();
 	                  if(relation.equals("="))
 	                  { 
-	                	  m.add(uri_source+','+uri_target);
+	                	  m.add(uri_source+C.separator+uri_target);
 	                  }
 				}
 			

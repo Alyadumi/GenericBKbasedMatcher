@@ -66,6 +66,7 @@ public class Matching {
 		Fichier.returnFolder(C.ResultFolderPath);
 		Fichier.returnFolder(C.directAlignmentFolderPath);
 		Fichier.returnFolder(C.alignmentsRepositoryFolderPath);
+		Fichier.returnFolder(C.MLselectionFolderPath);
 		
 		this.source=source;
 		this.target=target;

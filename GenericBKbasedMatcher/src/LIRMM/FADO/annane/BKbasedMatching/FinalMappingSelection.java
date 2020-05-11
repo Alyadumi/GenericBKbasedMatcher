@@ -23,7 +23,7 @@ import weka.core.Instances;
 public class FinalMappingSelection {
 	
 	String derived_paths_path;
-	HashMap<String, List<Path>> mapping_candidates_paths;
+	HashMap<String, ArrayList<Path>> mapping_candidates_paths;
 
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
@@ -87,7 +87,7 @@ public class FinalMappingSelection {
 			if (!candidats.keySet().contains(uri1))
 			{
 				liste =new HashMap<>();
-				liste.put(uri2,new MappingCandidate(1,pathLength,avgScore,MultScore,null));
+				liste.put(uri2,new MappingCandidate(1,pathLength,avgScore,MultScore));
 				candidats.put(uri1, liste);
 			}
 			else
@@ -95,7 +95,7 @@ public class FinalMappingSelection {
 				liste=candidats.get(uri1);
 				if(!liste.keySet().contains(uri2))
 				{
-					liste.put(uri2,new MappingCandidate(1,pathLength,avgScore,MultScore,null));
+					liste.put(uri2,new MappingCandidate(1,pathLength,avgScore,MultScore));
 					candidats.put(uri1, liste);
 				}
 				else
@@ -208,7 +208,7 @@ public class FinalMappingSelection {
 			if (!candidats.keySet().contains(uri1))
 			{
 				liste =new HashMap<>();
-				liste.put(uri2,new MappingCandidate(1,pathLength,avgScore,MultScore,null));
+				liste.put(uri2,new MappingCandidate(1,pathLength,avgScore,MultScore));
 				candidats.put(uri1, liste);
 			}
 			else
@@ -216,7 +216,7 @@ public class FinalMappingSelection {
 				liste=candidats.get(uri1);
 				if(!liste.keySet().contains(uri2))
 				{
-					liste.put(uri2,new MappingCandidate(1,pathLength,avgScore,MultScore,null));
+					liste.put(uri2,new MappingCandidate(1,pathLength,avgScore,MultScore));
 					candidats.put(uri1, liste);
 				}
 				else
@@ -281,6 +281,9 @@ public class FinalMappingSelection {
 	public  void generateTrainingSet() throws Exception
 	{
 		Fichier datasetFolder = new Fichier(C.MLselectionDatasetsFolderPath);
+		Fichier training_set_file = new Fichier (C.MLselectionFolderPath+"training_set.arff");
+		if (training_set_file.exists())training_set_file.delete();
+		training_set_file.ecrire(C.artff);
 		if(datasetFolder != null && datasetFolder.exists())
 		{
 			File[]	sub_folders = datasetFolder.listFiles();
@@ -302,11 +305,42 @@ public class FinalMappingSelection {
 					C.targetOntology = target_ontology_URL;
 					Matching matching = new Matching(C.sourceOntology, C.targetOntology);
 					this.derived_paths_path = matching.generateCandidateMappings();
-					this.extractMappingCandidatePaths();
-					
-					
+					this.loadMappingCandidatePaths();					
 					//annotate the candidate mappings with the reference alignments
-					//generate the arff file
+					TreeSet<String> reference_alignment = Fichier.loadReferenceAlignment(reference_alignment_URL.getPath());
+					TreeSet<String> reference_alignment_neutre = new TreeSet<>();
+					// neutre mappings are specific to OAEI reference alignment, please comment the following instruction when using other datasets 
+					reference_alignment_neutre = Fichier.loadReferenceAlignmentNeutre(reference_alignment_URL.getPath());
+				 	boolean tag;
+				 	//generate the training set file
+					for (String cm:this.mapping_candidates_paths.keySet())
+					{
+						String source_concept_uri = cm.substring(0, cm.indexOf(C.separator));
+						String target_concept_uri = cm.substring(cm.indexOf(C.separator)+1);
+						ArrayList<Path> paths = this.mapping_candidates_paths.get(cm);
+						MappingCandidate map_cand = new MappingCandidate(source_concept_uri, target_concept_uri, paths);
+						//value of tag
+						if(reference_alignment.contains(cm)||reference_alignment_neutre.contains(cm)||reference_alignment.contains(target_concept_uri+C.separator+source_concept_uri)||reference_alignment_neutre.contains(target_concept_uri+C.separator+source_concept_uri)) 
+							{
+								map_cand.annotation = true;
+							} 
+						else map_cand.annotation = false;
+						map_cand.computeAttributes();
+						training_set_file.ecrire(map_cand.MaxMax.toString()+','+map_cand.MaxMin.toString()+','+map_cand.MaxAvg.toString()+','+
+								                 map_cand.MinMax.toString()+','+map_cand.MinMin.toString()+','+map_cand.MinAvg.toString()+','+
+								                 map_cand.MaxMult.toString()+','+map_cand.MinMult.toString()+','+map_cand.AvgMult.toString()+','+
+								                 map_cand.MaxSum.toString()+','+map_cand.MinSum.toString()+','+map_cand.AvgSum.toString()+','+
+								                 map_cand.AvgMax.toString()+','+map_cand.AvgMin.toString()+','+map_cand.AvgAvg.toString()+','+
+								                 map_cand.MaxVar.toString()+','+map_cand.MinVar.toString()+','+map_cand.AvgVar.toString()+','+
+								                 map_cand.MaxAvgPerVar.toString()+','+map_cand.MinAvgPerVar.toString()+','+map_cand.AvgAvgPerVar.toString()+','+
+								                 String.valueOf(map_cand.maxPathLength)+','+String.valueOf(map_cand.minPathLength)+','+String.valueOf(map_cand.avgPathLength)+
+								                 String.valueOf(map_cand.pathNumber)+','+
+								                 String.valueOf(map_cand.direct_score)+','+
+								                 String.valueOf(map_cand.MaxAvgManualMappingsNumber)+','+
+								                 String.valueOf(map_cand.annotation)+"\r\n");
+					}
+					
+					
 					
 				}
 				
@@ -316,11 +350,15 @@ public class FinalMappingSelection {
 		
 		//merge all the arff files to have the training set
 	}
-    
-	public void extractMappingCandidatePaths() throws IOException {
+    /**
+     * this function load the generated paths per candidate mapping
+     * @throws IOException
+     */
+	public void loadMappingCandidatePaths() throws IOException {
 		
 		BufferedReader reader = new BufferedReader(new FileReader(this.derived_paths_path)); 
 	 	String line = null ;
+
 	 	mapping_candidates_paths = new HashMap<>();
 	 	while ((line = reader.readLine()) != null) 
 	 	{

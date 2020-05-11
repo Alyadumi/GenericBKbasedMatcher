@@ -21,20 +21,23 @@ public class MappingCandidate {
 	double maximum_average_of_manual_mappings;
 	int MaxAvgManualMappingsNumber =0;
 	
+	boolean annotation;// true or false according to the reference alignment
 	
-	
-	
-	
-	
-	String annotation;// true or false according to the reference alignment
-	
-	public MappingCandidate(int numberPath,int pathLengthMin,Double avgMax, Double MaxMult, String res) {
+	public MappingCandidate(int numberPath,int pathLengthMin,Double avgMax, Double MaxMult, boolean res) {
 		// TODO Auto-generated constructor stub
 		this.pathNumber=numberPath;
 		this.minPathLength=pathLengthMin;
 		this.MaxAvg=avgMax;
 		this.MaxMult=MaxMult;
 		this.annotation=res;
+	}
+	
+	public MappingCandidate(int numberPath,int pathLengthMin,Double avgMax, Double MaxMult) {
+		// TODO Auto-generated constructor stub
+		this.pathNumber=numberPath;
+		this.minPathLength=pathLengthMin;
+		this.MaxAvg=avgMax;
+		this.MaxMult=MaxMult;
 	}
 	
 	public MappingCandidate(String source_concept_uri, String target_concept_uri, ArrayList<Path> paths) {

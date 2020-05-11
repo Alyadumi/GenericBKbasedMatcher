@@ -628,7 +628,7 @@ C.session.run(query);
 			//System.out.println(path);
 			allPaths=allPaths+path;
 		}
-		Fichier fichier=new Fichier(C.derivedCheminsPath);
+		Fichier fichier = new Fichier(C.derivedCheminsPath);
 		fichier.ecrire(allPaths);
 	}
 	

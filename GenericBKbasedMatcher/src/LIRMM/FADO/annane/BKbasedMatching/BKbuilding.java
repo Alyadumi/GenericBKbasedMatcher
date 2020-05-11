@@ -478,7 +478,7 @@ public class BKbuilding {
 							 else System.out.println("[CreateOwlFile] BE carfeul");
 						 }
 					 }
-					 if(cpt!=numberConcept)System.out.println("[CreateOwlFile] numberConcept est: "+numberConcept+" trouvés est: "+cpt);
+					 if(cpt!=numberConcept)System.out.println("[CreateOwlFile] the number of concepts is: "+numberConcept+" found is: "+cpt);
 					 /* *************************** Requete2: retrieve synonyms ************************************ */
 					 requete2=C.prefix+"select distinct ?x ?y where {?x "+C.synonyms+" ?y}";
 					 requete2=requete2+ " VALUES ?x  {"+values+"}";

@@ -54,7 +54,8 @@ public class C {
 	/**
 	 * Internal parameters
 	 */
-    public final static String MLselectionDatasetsFolderPath = "ML_selection/ML_datasets"+File.separator;
+    public final static String MLselectionFolderPath = "ML_selection"+File.separator;
+    public final static String MLselectionDatasetsFolderPath = MLselectionFolderPath+"ML_datasets"+File.separator;
     public final static String BkAlignmentsFolderPath="ProcessingFolder/BKalignments"+File.separator;
 	public final static String ResultFolderPath= "ProcessingFolder/Result"+File.separator;
 	public final static String BkFolderPath="ProcessingFolder/BK"+File.separator;
@@ -174,7 +175,6 @@ public class C {
 "@attribute LAvg numeric \r\n"+
 "@attribute PN numeric \r\n"+
 "@attribute DS numeric \r\n"+
-"@attribute PLab numeric \r\n"+
 "@attribute obo numeric \r\n"+
 "@attribute class {true, false} \r\n"+
 "@data \r\n";
