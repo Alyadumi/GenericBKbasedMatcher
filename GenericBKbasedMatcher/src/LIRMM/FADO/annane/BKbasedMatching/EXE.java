@@ -17,6 +17,7 @@ public class EXE {
 			
 		C.derivationMaxPathLength = 4;
 		C.derivationStrategy = derivationStrategies.specific_algo;
+		
 		if(C.derivationStrategy == derivationStrategies.neo4j)
 		{
 			String data_base_name = "neo4j";
@@ -24,6 +25,9 @@ public class EXE {
 			C.driver = GraphDatabase.driver( "bolt://localhost:7687", AuthTokens.basic(data_base_name, password )  );
 			C.session= C.driver.session();
 		}
+		
+		C.mappingSelectionStrategy = C.mappingSelectionStrategies.ML_based;
+		
 		C.semantic_verification = true;
 		
 		C.BKselectionInternalExploration = false ;

@@ -141,7 +141,8 @@ public class C {
 	public static final String mapCodeDoid="C:/Users/annane/workspace/Matching/Resources/doid.xrefs";
 	public static final String mapCodeUberon="C:/Users/annane/workspace/Matching/Resources/uberon.xrefs";
 	public static final String mapCode="C:/Users/annane/workspace/Matching/Resources/UberonDoid.txt";
-	public static String artff=
+	public static String structure_artff =
+"@relation trainingFile \r\n"+
 "@attribute aMaxMax numeric \r\n"+
 "@attribute aMaxMin numeric \r\n"+
 "@attribute aMaxAvg numeric \r\n"+
@@ -175,9 +176,10 @@ public class C {
 "@attribute LAvg numeric \r\n"+
 "@attribute PN numeric \r\n"+
 "@attribute DS numeric \r\n"+
-"@attribute obo numeric \r\n"+
-"@attribute class {true, false} \r\n"+
-"@data \r\n";
+"@attribute obo numeric \r\n";
+
+	public static String training_arff = structure_artff + "@attribute class {true, false} \r\n"+ "@data \r\n";
+	public static String test_arff = structure_artff + "@attribute class {true, false} \r\n"+ "@data \r\n";
 	
 	//*************************************************************************
 		public static  ArrayList<String> generatePoss(String word){

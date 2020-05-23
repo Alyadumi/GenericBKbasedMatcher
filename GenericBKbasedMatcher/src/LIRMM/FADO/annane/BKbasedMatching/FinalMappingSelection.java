@@ -22,15 +22,17 @@ import weka.core.Instances;
 
 public class FinalMappingSelection {
 	
-	String derived_paths_path;
+	String derived_paths_path, 
+		training_set_path = C.MLselectionFolderPath+"training_set.arff", 
+		test_set_path = C.MLselectionFolderPath+"test_set.arff";
+	ArrayList<String> index_candidate_mappings = new ArrayList<>();
 	HashMap<String, ArrayList<Path>> mapping_candidates_paths;
 
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
 		// create if they don't exist folders that are required for the execution 
 		FinalMappingSelection fms = new FinalMappingSelection();
-		fms.generateTrainingSet();
-
+		fms.MLBasedSelection();
 	}
 	
 	public FinalMappingSelection() {
@@ -157,7 +159,7 @@ public class FinalMappingSelection {
 			//String res=lineParser.nextToken();
 			finalMappings.add(uri1+','+uri2+','+score);	
 		}
-		long time=System.currentTimeMillis()-debut;
+		long time = System.currentTimeMillis()-debut;
 		C.executionTime.add("selection "+(time)+"ms");}
 		else System.out.println("The derivation result is empty");
 		return finalMappings;
@@ -269,11 +271,45 @@ public class FinalMappingSelection {
 	/* ***************************************** ML based selection **************************************************** */
     /**
      * the ML based selection requires several steps:
-     * 1. generate the training set
+     * 1. generate the test set
+     * 2. generate the training set
      * 2. learning the selection model
      * 3. classifying candidate mappings 
      */
 	
+	/** generate the test set
+	 * @throws IOException 
+	 * 
+	 */
+	public void generateTestSet() throws IOException
+	{
+		Fichier test_set_file = new Fichier (C.MLselectionFolderPath+"test_set.arff");
+		if (test_set_file.exists()) test_set_file.delete();
+		test_set_file.ecrire(C.test_arff);
+		this.derived_paths_path = C.derivedCheminsPath;
+		this.loadMappingCandidatePaths();
+		for (String cm:this.mapping_candidates_paths.keySet())
+		{
+			index_candidate_mappings.add(cm);
+			String source_concept_uri = cm.substring(0, cm.indexOf(C.separator));
+			String target_concept_uri = cm.substring(cm.indexOf(C.separator)+1);
+			ArrayList<Path> paths = this.mapping_candidates_paths.get(cm);
+			MappingCandidate map_cand = new MappingCandidate(source_concept_uri, target_concept_uri, paths);
+			map_cand.computeAttributes();
+			test_set_file.ecrire(map_cand.MaxMax.toString()+','+map_cand.MaxMin.toString()+','+map_cand.MaxAvg.toString()+','+
+					                 map_cand.MinMax.toString()+','+map_cand.MinMin.toString()+','+map_cand.MinAvg.toString()+','+
+					                 map_cand.MaxMult.toString()+','+map_cand.MinMult.toString()+','+map_cand.AvgMult.toString()+','+
+					                 map_cand.MaxSum.toString()+','+map_cand.MinSum.toString()+','+map_cand.AvgSum.toString()+','+
+					                 map_cand.AvgMax.toString()+','+map_cand.AvgMin.toString()+','+map_cand.AvgAvg.toString()+','+
+					                 map_cand.MaxVar.toString()+','+map_cand.MinVar.toString()+','+map_cand.AvgVar.toString()+','+
+					                 map_cand.MaxAvgPerVar.toString()+','+map_cand.MinAvgPerVar.toString()+','+map_cand.AvgAvgPerVar.toString()+','+
+					                 String.valueOf(map_cand.maxPathLength)+','+String.valueOf(map_cand.minPathLength)+','+String.valueOf(map_cand.avgPathLength)+','+
+					                 String.valueOf(map_cand.pathNumber)+','+
+					                 String.valueOf(map_cand.direct_score)+','+
+					                 String.valueOf(map_cand.MaxAvgManualMappingsNumber)+"\r\n");			
+		}
+		
+	}
 	 /**
 	  * generate the training set
 	 * @throws Exception 
@@ -283,12 +319,12 @@ public class FinalMappingSelection {
 		Fichier datasetFolder = new Fichier(C.MLselectionDatasetsFolderPath);
 		Fichier training_set_file = new Fichier (C.MLselectionFolderPath+"training_set.arff");
 		if (training_set_file.exists())training_set_file.delete();
-		training_set_file.ecrire(C.artff);
+		training_set_file.ecrire(C.training_arff);
 		if(datasetFolder != null && datasetFolder.exists())
 		{
 			File[]	sub_folders = datasetFolder.listFiles();
 			for (File folder:sub_folders)
-			{
+			{	System.out.println(folder.getName());
 				URL source_ontology_URL = null, target_ontology_URL = null, reference_alignment_URL =null;
 				File[] files = folder.listFiles();
 				for(File file: files)
@@ -333,17 +369,15 @@ public class FinalMappingSelection {
 								                 map_cand.AvgMax.toString()+','+map_cand.AvgMin.toString()+','+map_cand.AvgAvg.toString()+','+
 								                 map_cand.MaxVar.toString()+','+map_cand.MinVar.toString()+','+map_cand.AvgVar.toString()+','+
 								                 map_cand.MaxAvgPerVar.toString()+','+map_cand.MinAvgPerVar.toString()+','+map_cand.AvgAvgPerVar.toString()+','+
-								                 String.valueOf(map_cand.maxPathLength)+','+String.valueOf(map_cand.minPathLength)+','+String.valueOf(map_cand.avgPathLength)+
-								                 String.valueOf(map_cand.pathNumber)+','+
+								                 String.valueOf(map_cand.maxPathLength)+','+
+								                 String.valueOf(map_cand.minPathLength)+','+
+								                 String.valueOf(map_cand.avgPathLength)+','+
+								                 String.valueOf(map_cand.pathNumber)   +','+
 								                 String.valueOf(map_cand.direct_score)+','+
 								                 String.valueOf(map_cand.MaxAvgManualMappingsNumber)+','+
 								                 String.valueOf(map_cand.annotation)+"\r\n");
-					}
-					
-					
-					
+					}					
 				}
-				
 			}
 		}
 		else new Exception("The dataset folder does not exist!").printStackTrace();
@@ -374,49 +408,40 @@ public class FinalMappingSelection {
 	}
 	
 	
-	/* public static  TreeSet<String> testWekaWithJava(String learn, String test,String indexInstancesPath) throws Exception
+	 public   TreeSet<String> MLBasedSelection( ) throws Exception
 	   {
 		   System.out.println("ML based final mapping selection");
-		  // String folder="C://Users//annane//Desktop//today3//";
-		   TreeSet<String> a = new TreeSet<>();
-		   BufferedReader rt = new BufferedReader(new InputStreamReader(new FileInputStream(C.folder+learn+".arff")));
+		   generateTestSet();
+		   generateTrainingSet();
+		   TreeSet<String> alignment = new TreeSet<>();
+		   //load the training set
+		   BufferedReader rt = new BufferedReader(new InputStreamReader(new FileInputStream(this.training_set_path)));
 		   Instances data = new Instances(rt);
-		   System.out.println("fichier de training est chargé ");
-		   // setting class attribute if the data format does not provide this information
-		   // For example, the XRFF format saves the class attribute information as well
+		   // setting class attribute 
 		   if (data.classIndex() == -1)
 		     data.setClassIndex(data.numAttributes() - 1);
-		   //String[] options = new String[1];
-		   //options[0] = "-U";            // unpruned tree
-		   RandomForest tree = new RandomForest();   // new instance of tree
-		   //tree.setOptions(options);     // set the options
-		   tree.buildClassifier(data);   // build classifier
 
-		   System.out.println("modèle appris");
+		   RandomForest tree = new RandomForest();   // new instance of tree
+
+		   tree.buildClassifier(data);   // learn the model (classifier)
 		   
-		   ArrayList<String> indexInstances=Fichier.loadInstances(indexInstancesPath);
-		   System.out.println("les instances chargées: "+indexInstances.size());
 		   // load unlabeled data
 		   Instances unlabeled = new Instances(
 		                           new BufferedReader(
-		                             new FileReader(C.folder+test+".arff")));
-		   
+		                             new FileReader(this.training_set_path)));
 		   // set class attribute
 		   unlabeled.setClassIndex(unlabeled.numAttributes() - 1);
 		   
-		   // create copy
-		   Instances labeled = new Instances(unlabeled); 
-		  
 		   // label instances
 		   for (int i = 0; i < unlabeled.numInstances(); i++) {
 		     double clsLabel = tree.classifyInstance(unlabeled.instance(i));
-		    if(clsLabel==0)
-		    {
-		    	a.add(indexInstances.get(i));
-		       //writer.println(indexInstances.get(i));
-		       // writer.flush();
-		      }
-		   }
-		   return a;
-	   }*/
+		     if(clsLabel == 0.0)
+		     {
+		    	 alignment.add(index_candidate_mappings.get(i).replace(C.separator, ",")+",1.0");
+		     }
+		    }
+		  
+		  return alignment;   
 }
+
+} //end class

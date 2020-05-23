@@ -140,7 +140,15 @@ public class Matching {
 		
 		//Final mapping selection
 		FinalMappingSelection fms = new FinalMappingSelection();
-		resultAlignment= fms.selection(C.thresholdSelection);
+		if(C.mappingSelectionStrategy == C.mappingSelectionStrategies.Rule_based)
+		{
+			resultAlignment= fms.selection(C.thresholdSelection);
+		}
+		else
+		{
+			resultAlignment= fms.MLBasedSelection();
+		}
+		
 		String resFile=C.ResultFolderPath+"res.rdf";
 		Fichier fichierResultat=new Fichier(resFile);
 		fichierResultat.deleteFile();
