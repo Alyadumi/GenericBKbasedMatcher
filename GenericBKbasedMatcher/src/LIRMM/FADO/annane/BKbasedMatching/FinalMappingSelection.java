@@ -397,14 +397,20 @@ public class FinalMappingSelection {
 	 	mapping_candidates_paths = new HashMap<>();
 	 	while ((line = reader.readLine()) != null) 
 	 	{
-	 		Path p = new Path(line);
-	 		String key = p.source_concept_uri+C.separator+p.target_concept_uri;
-	 		if(!mapping_candidates_paths.keySet().contains(key))
+	 		try {
+			 		Path p = new Path(line);
+			 		String key = p.source_concept_uri+C.separator+p.target_concept_uri;
+			 		if(!mapping_candidates_paths.keySet().contains(key))
+			 		{
+			 			ArrayList<Path> l = new ArrayList<>();
+			 			mapping_candidates_paths.put(key, l);
+			 		}
+			 		mapping_candidates_paths.get(key).add(p);	}
+	 		catch(Exception e)
 	 		{
-	 			ArrayList<Path> l = new ArrayList<>();
-	 			mapping_candidates_paths.put(key, l);
+	 			System.out.println("[warning] this line could not be parsed: "+line);
+	 			
 	 		}
-	 		mapping_candidates_paths.get(key).add(p);	
 	 	}
 	}
 	

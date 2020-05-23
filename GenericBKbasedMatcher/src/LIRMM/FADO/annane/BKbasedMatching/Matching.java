@@ -395,8 +395,8 @@ public class Matching {
 				    	StringTokenizer lineParser = new StringTokenizer(mapping, ",");
 				    	String idS=lineParser.nextToken()
 				    			,idT=lineParser.nextToken();
-				    	if(refAlign.contains(idS+','+idT)||refAlign.contains(idT+','+idS))correctMappings++;	
-				    	else if(refAlignNeutre.contains(idS+','+idT)||refAlignNeutre.contains(idT+','+idS))neutreMappings++;
+				    	if(refAlign.contains(idS+C.separator+idT)||refAlign.contains(idT+C.separator+idS))correctMappings++;	
+				    	else if(refAlignNeutre.contains(idS+C.separator+idT)||refAlignNeutre.contains(idT+C.separator+idS))neutreMappings++;
 					}	
 				   // System.out.println(neutreMappings+" neutre");
 					recall = correctMappings / refAlign.size();
