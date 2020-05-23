@@ -306,7 +306,8 @@ public class FinalMappingSelection {
 					                 String.valueOf(map_cand.maxPathLength)+','+String.valueOf(map_cand.minPathLength)+','+String.valueOf(map_cand.avgPathLength)+','+
 					                 String.valueOf(map_cand.pathNumber)+','+
 					                 String.valueOf(map_cand.direct_score)+','+
-					                 String.valueOf(map_cand.MaxAvgManualMappingsNumber)+"\r\n");			
+					                 String.valueOf(map_cand.MaxAvgManualMappingsNumber)+','+
+                                     "? \r\n");			
 		}
 		
 	}
@@ -411,8 +412,8 @@ public class FinalMappingSelection {
 	 public   TreeSet<String> MLBasedSelection( ) throws Exception
 	   {
 		   System.out.println("ML based final mapping selection");
-		   generateTestSet();
-		   generateTrainingSet();
+		  generateTestSet();
+		 //  generateTrainingSet();
 		   TreeSet<String> alignment = new TreeSet<>();
 		   //load the training set
 		   BufferedReader rt = new BufferedReader(new InputStreamReader(new FileInputStream(this.training_set_path)));
@@ -428,10 +429,9 @@ public class FinalMappingSelection {
 		   // load unlabeled data
 		   Instances unlabeled = new Instances(
 		                           new BufferedReader(
-		                             new FileReader(this.training_set_path)));
+		                             new FileReader(this.test_set_path)));
 		   // set class attribute
 		   unlabeled.setClassIndex(unlabeled.numAttributes() - 1);
-		   
 		   // label instances
 		   for (int i = 0; i < unlabeled.numInstances(); i++) {
 		     double clsLabel = tree.classifyInstance(unlabeled.instance(i));

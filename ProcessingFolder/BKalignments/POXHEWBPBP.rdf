@@ -1,0 +1,903 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF xmlns="http://knowledgeweb.semanticweb.org/heterogeneity/alignment"
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema#">
+
+<Alignment>
+<xml>yes</xml>
+<level>0</level>
+<type>??</type>
+<onto1>http://mouse.owl</onto1>
+<onto2>http://purl.obolibrary.org/obo/doid.owl</onto2>
+<uri1>http://mouse.owl</uri1>
+<uri2>http://purl.obolibrary.org/obo/doid.owl</uri2>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000166"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_4310"/>
+		<measure rdf:datatype="xsd:float">0.58</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000280"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_11343"/>
+		<measure rdf:datatype="xsd:float">0.49</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0001646"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_5397"/>
+		<measure rdf:datatype="xsd:float">0.17</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000165"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_4044"/>
+		<measure rdf:datatype="xsd:float">0.54</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000284"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_2163"/>
+		<measure rdf:datatype="xsd:float">0.53</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000284"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_9310"/>
+		<measure rdf:datatype="xsd:float">0.53</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000169"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_4202"/>
+		<measure rdf:datatype="xsd:float">0.53</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000104"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_1222"/>
+		<measure rdf:datatype="xsd:float">0.56</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000327"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_4298"/>
+		<measure rdf:datatype="xsd:float">0.55</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000237"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_2952"/>
+		<measure rdf:datatype="xsd:float">0.51</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000173"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_1931"/>
+		<measure rdf:datatype="xsd:float">0.53</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0002473"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_448"/>
+		<measure rdf:datatype="xsd:float">0.45</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000110"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_9321"/>
+		<measure rdf:datatype="xsd:float">0.55</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000116"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_9553"/>
+		<measure rdf:datatype="xsd:float">0.56</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000116"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_3953"/>
+		<measure rdf:datatype="xsd:float">0.59</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000114"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_315"/>
+		<measure rdf:datatype="xsd:float">0.61</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0002477"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_9149"/>
+		<measure rdf:datatype="xsd:float">0.7</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000331"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_4551"/>
+		<measure rdf:datatype="xsd:float">0.45</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000184"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_679"/>
+		<measure rdf:datatype="xsd:float">0.54</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000124"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_4905"/>
+		<measure rdf:datatype="xsd:float">0.43</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000330"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_6126"/>
+		<measure rdf:datatype="xsd:float">0.51</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000404"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_2883"/>
+		<measure rdf:datatype="xsd:float">0.4</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000255"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_9739"/>
+		<measure rdf:datatype="xsd:float">0.55</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000409"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_3445"/>
+		<measure rdf:datatype="xsd:float">0.41</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0001589"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_12897"/>
+		<measure rdf:datatype="xsd:float">0.66</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000253"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_4893"/>
+		<measure rdf:datatype="xsd:float">0.51</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000253"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_5099"/>
+		<measure rdf:datatype="xsd:float">0.53</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000253"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_5100"/>
+		<measure rdf:datatype="xsd:float">0.52</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000259"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_10521"/>
+		<measure rdf:datatype="xsd:float">0.48</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000348"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_702"/>
+		<measure rdf:datatype="xsd:float">0.47</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000134"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_4960"/>
+		<measure rdf:datatype="xsd:float">0.55</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000134"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_4961"/>
+		<measure rdf:datatype="xsd:float">0.53</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000258"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_4288"/>
+		<measure rdf:datatype="xsd:float">0.52</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000258"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_379"/>
+		<measure rdf:datatype="xsd:float">0.53</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000198"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_2786"/>
+		<measure rdf:datatype="xsd:float">0.42</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000346"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_10854"/>
+		<measure rdf:datatype="xsd:float">0.66</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000257"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_5782"/>
+		<measure rdf:datatype="xsd:float">0.55</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000139"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_9942"/>
+		<measure rdf:datatype="xsd:float">0.54</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000138"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_1744"/>
+		<measure rdf:datatype="xsd:float">0.5</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000410"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_3855"/>
+		<measure rdf:datatype="xsd:float">0.59</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000263"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_12759"/>
+		<measure rdf:datatype="xsd:float">0.52</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000263"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_1417"/>
+		<measure rdf:datatype="xsd:float">0.51</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000355"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_10350"/>
+		<measure rdf:datatype="xsd:float">0.23</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0001599"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_5330"/>
+		<measure rdf:datatype="xsd:float">0.53</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000264"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_4353"/>
+		<measure rdf:datatype="xsd:float">0.53</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000264"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_4352"/>
+		<measure rdf:datatype="xsd:float">0.54</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0002443"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_2742"/>
+		<measure rdf:datatype="xsd:float">0.55</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000268"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_530"/>
+		<measure rdf:datatype="xsd:float">0.5</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0001180"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_5913"/>
+		<measure rdf:datatype="xsd:float">0.6</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000274"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_1400"/>
+		<measure rdf:datatype="xsd:float">0.55</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000152"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_2438"/>
+		<measure rdf:datatype="xsd:float">0.52</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000150"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_5667"/>
+		<measure rdf:datatype="xsd:float">0.57</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000150"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_1383"/>
+		<measure rdf:datatype="xsd:float">0.55</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000150"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_2664"/>
+		<measure rdf:datatype="xsd:float">0.53</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0002545"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_578"/>
+		<measure rdf:datatype="xsd:float">0.34</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000276"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_4645"/>
+		<measure rdf:datatype="xsd:float">0.51</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000275"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_110"/>
+		<measure rdf:datatype="xsd:float">0.47</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0001095"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_2817"/>
+		<measure rdf:datatype="xsd:float">0.55</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000431"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_1352"/>
+		<measure rdf:datatype="xsd:float">0.63</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000431"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_1350"/>
+		<measure rdf:datatype="xsd:float">0.62</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000435"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_0050161"/>
+		<measure rdf:datatype="xsd:float">0.56</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0001255"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_2173"/>
+		<measure rdf:datatype="xsd:float">0.43</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0001256"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_6425"/>
+		<measure rdf:datatype="xsd:float">0.32</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000374"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_5977"/>
+		<measure rdf:datatype="xsd:float">0.53</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0001925"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_3407"/>
+		<measure rdf:datatype="xsd:float">0.66</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000386"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_780"/>
+		<measure rdf:datatype="xsd:float">0.51</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000385"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_1962"/>
+		<measure rdf:datatype="xsd:float">0.55</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000385"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_1964"/>
+		<measure rdf:datatype="xsd:float">0.56</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0001273"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_0050625"/>
+		<measure rdf:datatype="xsd:float">0.53</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0001273"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_9741"/>
+		<measure rdf:datatype="xsd:float">0.54</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0002565"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_2648"/>
+		<measure rdf:datatype="xsd:float">0.61</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0002565"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_5759"/>
+		<measure rdf:datatype="xsd:float">0.57</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000452"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_14278"/>
+		<measure rdf:datatype="xsd:float">0.36</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000394"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_119"/>
+		<measure rdf:datatype="xsd:float">0.52</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000394"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_121"/>
+		<measure rdf:datatype="xsd:float">0.5</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000397"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_512"/>
+		<measure rdf:datatype="xsd:float">0.45</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0001792"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_1364"/>
+		<measure rdf:datatype="xsd:float">0.55</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0001243"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_6198"/>
+		<measure rdf:datatype="xsd:float">0.46</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0001292"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_238"/>
+		<measure rdf:datatype="xsd:float">0.48</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0001793"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_1361"/>
+		<measure rdf:datatype="xsd:float">0.57</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0001795"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_6947"/>
+		<measure rdf:datatype="xsd:float">0.56</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000474"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_3627"/>
+		<measure rdf:datatype="xsd:float">0.11</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0002703"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_4123"/>
+		<measure rdf:datatype="xsd:float">0.47</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000487"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_6227"/>
+		<measure rdf:datatype="xsd:float">0.59</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0001336"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_11606"/>
+		<measure rdf:datatype="xsd:float">0.11</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000484"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_4699"/>
+		<measure rdf:datatype="xsd:float">0.54</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0002711"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_2914"/>
+		<measure rdf:datatype="xsd:float">0.56</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000067"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_866"/>
+		<measure rdf:datatype="xsd:float">0.5</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0001331"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_5090"/>
+		<measure rdf:datatype="xsd:float">0.55</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000823"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_3540"/>
+		<measure rdf:datatype="xsd:float">0.59</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000072"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_114"/>
+		<measure rdf:datatype="xsd:float">0.48</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000010"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_1287"/>
+		<measure rdf:datatype="xsd:float">0.56</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000086"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_4079"/>
+		<measure rdf:datatype="xsd:float">0.58</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000089"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_5749"/>
+		<measure rdf:datatype="xsd:float">0.59</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000090"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_13834"/>
+		<measure rdf:datatype="xsd:float">0.58</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000023"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_449"/>
+		<measure rdf:datatype="xsd:float">0.45</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000202"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_0060104"/>
+		<measure rdf:datatype="xsd:float">0.33</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000219"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_11465"/>
+		<measure rdf:datatype="xsd:float">0.56</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000219"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_2621"/>
+		<measure rdf:datatype="xsd:float">0.56</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000218"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_1192"/>
+		<measure rdf:datatype="xsd:float">0.56</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000218"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_574"/>
+		<measure rdf:datatype="xsd:float">0.57</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000565"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_159"/>
+		<measure rdf:datatype="xsd:float">0.46</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000215"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_5656"/>
+		<measure rdf:datatype="xsd:float">0.6</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000215"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_338"/>
+		<measure rdf:datatype="xsd:float">0.64</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000228"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_574"/>
+		<measure rdf:datatype="xsd:float">0.56</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0002407"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_4693"/>
+		<measure rdf:datatype="xsd:float">0.54</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0001631"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_4137"/>
+		<measure rdf:datatype="xsd:float">0.55</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0001631"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_4608"/>
+		<measure rdf:datatype="xsd:float">0.54</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000319"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_13650"/>
+		<measure rdf:datatype="xsd:float">0.47</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000167"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_331"/>
+		<measure rdf:datatype="xsd:float">0.56</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://mouse.owl#MA_0000167"/>
+		<entity2 rdf:resource="http://purl.obolibrary.org/obo/DOID_3620"/>
+		<measure rdf:datatype="xsd:float">0.57</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+</Alignment>
+</rdf:RDF>

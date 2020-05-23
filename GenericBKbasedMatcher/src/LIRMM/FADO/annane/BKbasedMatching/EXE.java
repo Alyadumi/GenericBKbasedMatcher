@@ -42,7 +42,8 @@ public class EXE {
 		{
 	    Matching matcher=new Matching(sourceOntologyFile.toURI().toURL(), targetOntologyFile.toURI().toURL());
 	    URL res = matcher.BkBasedMatching();//res will contain the URL of the generated alignment
-	    System.out.println(res);
+
+	    //File f = new File (C.ResultFolderPath+"res.rdf");
 	    matcher.ComputeFScore(res, C.ma_nci_Ref);
 		}
 		else
