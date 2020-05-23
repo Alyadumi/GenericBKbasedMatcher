@@ -411,9 +411,9 @@ public class FinalMappingSelection {
 	
 	 public   TreeSet<String> MLBasedSelection( ) throws Exception
 	   {
-		   System.out.println("ML based final mapping selection");
-		  generateTestSet();
-		 //  generateTrainingSet();
+		   System.out.println("**************** ML based final mapping selection ****************");
+		   generateTestSet();
+		   generateTrainingSet();
 		   TreeSet<String> alignment = new TreeSet<>();
 		   //load the training set
 		   BufferedReader rt = new BufferedReader(new InputStreamReader(new FileInputStream(this.training_set_path)));
